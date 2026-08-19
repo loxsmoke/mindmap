@@ -44,11 +44,33 @@ public static class UpdateService
                 ? parsed
                 : DateTimeOffset.UtcNow;
 
-            return new ReleaseInfo(version, publishedAt);
+            var (setupUrl, setupSize) = FindSetupAsset(root, version);
+            return new ReleaseInfo(version, publishedAt, setupUrl, setupSize);
         }
         catch
         {
             return null;
         }
+    }
+
+    private static (string? Url, long Size) FindSetupAsset(JsonElement root, string version)
+    {
+        if (!root.TryGetProperty("assets", out var assets) || assets.ValueKind != JsonValueKind.Array)
+            return (null, 0);
+
+        var wanted = UpdateCheck.SetupAssetName(version);
+        foreach (var asset in assets.EnumerateArray())
+        {
+            if (!asset.TryGetProperty("name", out var nameEl)) continue;
+            if (!string.Equals(nameEl.GetString(), wanted, StringComparison.OrdinalIgnoreCase)) continue;
+            if (!asset.TryGetProperty("browser_download_url", out var urlEl)) continue;
+
+            var url = urlEl.GetString();
+            if (string.IsNullOrWhiteSpace(url)) continue;
+            var size = asset.TryGetProperty("size", out var sizeEl) && sizeEl.TryGetInt64(out var s) ? s : 0;
+            return (url, size);
+        }
+
+        return (null, 0);
     }
 }

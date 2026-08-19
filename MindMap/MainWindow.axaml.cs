@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -30,9 +31,17 @@ public partial class MainWindow : Window
     private MenuItem _recentMenu = null!;
     private Border _updateBanner = null!;
     private TextBlock _updateBannerText = null!;
+    private ProgressBar _updateProgressBar = null!;
+    private Button _installUpdateBtn = null!;
+    private Button _downloadUpdateBtn = null!;
+    private Button _viewUpdateBtn = null!;
+    private Button _dismissUpdateBtn = null!;
     private DispatcherTimer? _updateTimer;
     private ReleaseInfo? _latestRelease;
     private bool _checkingForUpdates;
+    private bool _updateBusy;
+    private bool _canInstallUpdate;
+    private bool _canDownloadUpdate;
     private readonly Dictionary<TextAlignment, Button> _alignmentButtons = new();
     private string? _currentPath;
     private bool _isDirty;
@@ -94,6 +103,11 @@ public partial class MainWindow : Window
         _recentMenu = this.FindControl<MenuItem>("RecentMenuItem")!;
         _updateBanner = this.FindControl<Border>("UpdateBanner")!;
         _updateBannerText = this.FindControl<TextBlock>("UpdateBannerText")!;
+        _updateProgressBar = this.FindControl<ProgressBar>("UpdateProgressBar")!;
+        _installUpdateBtn = this.FindControl<Button>("InstallUpdateBtn")!;
+        _downloadUpdateBtn = this.FindControl<Button>("DownloadUpdateBtn")!;
+        _viewUpdateBtn = this.FindControl<Button>("ViewUpdateBtn")!;
+        _dismissUpdateBtn = this.FindControl<Button>("DismissUpdateBtn")!;
 
         this.FindControl<MenuItem>("NewMenuItem")!.Click += async (_, _) => await OnNew();
         this.FindControl<MenuItem>("OpenMenuItem")!.Click += async (_, _) => await OnOpen();
@@ -117,8 +131,10 @@ public partial class MainWindow : Window
         this.FindControl<Button>("ZoomInBtn")!.Click += (_, _) => _editor.ZoomIn();
         this.FindControl<Button>("ZoomOutBtn")!.Click += (_, _) => _editor.ZoomOut();
         this.FindControl<Button>("FitBtn")!.Click += (_, _) => _editor.ZoomToFit();
-        this.FindControl<Button>("ViewUpdateBtn")!.Click += (_, _) => ViewReleaseOnGitHub();
-        this.FindControl<Button>("DismissUpdateBtn")!.Click += (_, _) => DismissUpdate();
+        _installUpdateBtn.Click += async (_, _) => await InstallUpdateAsync();
+        _downloadUpdateBtn.Click += async (_, _) => await DownloadUpdateAsync();
+        _viewUpdateBtn.Click += (_, _) => ViewReleaseOnGitHub();
+        _dismissUpdateBtn.Click += (_, _) => DismissUpdate();
 
         LoadRecentFiles();
         BuildRecentMenu();
@@ -1017,11 +1033,15 @@ public partial class MainWindow : Window
                 case UpdateCheck.BannerState.Unchanged:
                     break;
                 case UpdateCheck.BannerState.Hidden:
+                    _latestRelease = null;
                     _updateBanner.IsVisible = false;
                     break;
                 case UpdateCheck.BannerState.Shown:
                     _latestRelease = release;
                     _updateBannerText.Text = $"MindMap v{release!.Version} is available.";
+                    _canDownloadUpdate = true;
+                    _canInstallUpdate = release.SetupUrl is not null && UpdateInstaller.IsInstalledBySetup();
+                    UpdateBannerActions();
                     _updateBanner.IsVisible = true;
                     break;
             }
@@ -1030,6 +1050,88 @@ public partial class MainWindow : Window
         {
             _checkingForUpdates = false;
         }
+    }
+
+    private async Task InstallUpdateAsync()
+    {
+        if (_latestRelease is not { } release || _updateBusy || !_canInstallUpdate) return;
+        var previousText = _updateBannerText.Text;
+
+        var path = await DownloadInstallerAsync(release, UpdateInstaller.UpdateStagingDir());
+        if (path is null) return;
+
+        try
+        {
+            _updateBannerText.Text = $"Installing v{release.Version} - MindMap will restart...";
+            UpdateInstaller.Launch(path);
+        }
+        catch (Win32Exception ex) when (ex.NativeErrorCode == 1223)
+        {
+            _updateBannerText.Text = previousText;
+            SetUpdateBusy(false);
+            return;
+        }
+        catch
+        {
+            _updateBannerText.Text = "Could not start the installer - try Download instead.";
+            _canInstallUpdate = false;
+            SetUpdateBusy(false);
+            UpdateBannerActions();
+            return;
+        }
+
+        Close();
+    }
+
+    private async Task DownloadUpdateAsync()
+    {
+        if (_latestRelease is not { } release || _updateBusy || !_canDownloadUpdate) return;
+
+        var path = await DownloadInstallerAsync(release, UpdateInstaller.DownloadsFolder());
+        if (path is null) return;
+
+        UpdateInstaller.Reveal(path);
+        _updateBannerText.Text = $"v{release.Version} saved to Downloads";
+    }
+
+    private async Task<string?> DownloadInstallerAsync(ReleaseInfo release, string destDir)
+    {
+        SetUpdateBusy(true);
+        _updateProgressBar.Value = 0;
+        _updateBannerText.Text = $"Downloading v{release.Version}...";
+
+        var progress = new Progress<double>(p => _updateProgressBar.Value = p);
+        var path = await UpdateInstaller.DownloadAsync(release, destDir, progress);
+
+        if (path is null)
+        {
+            _updateBannerText.Text = $"Download of v{release.Version} failed - try View on GitHub.";
+            _canInstallUpdate = false;
+            SetUpdateBusy(false);
+            UpdateBannerActions();
+            return null;
+        }
+
+        SetUpdateBusy(false);
+        return path;
+    }
+
+    private void SetUpdateBusy(bool busy)
+    {
+        _updateBusy = busy;
+        _updateProgressBar.IsVisible = busy;
+        UpdateBannerActions();
+    }
+
+    private void UpdateBannerActions()
+    {
+        _installUpdateBtn.IsVisible = _canInstallUpdate;
+        _downloadUpdateBtn.IsVisible = _canDownloadUpdate;
+
+        _installUpdateBtn.IsEnabled = !_updateBusy;
+        _downloadUpdateBtn.IsEnabled = !_updateBusy;
+        _viewUpdateBtn.IsEnabled = !_updateBusy;
+        _dismissUpdateBtn.IsEnabled = !_updateBusy;
     }
 
     private void ViewReleaseOnGitHub()
@@ -1054,6 +1156,9 @@ public partial class MainWindow : Window
             WriteDismissedUpdate(release.Version);
 
         _updateBanner.IsVisible = false;
+        _canInstallUpdate = false;
+        _canDownloadUpdate = false;
+        SetUpdateBusy(false);
     }
 
     private static string? ReadDismissedUpdate()

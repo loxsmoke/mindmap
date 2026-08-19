@@ -25,10 +25,16 @@ public sealed class UpdateCheckTests
     [Fact]
     public void DecideHidesDismissedRelease()
     {
-        var release = new ReleaseInfo("1.2.3", DateTimeOffset.UtcNow);
+        var release = new ReleaseInfo("1.2.3", DateTimeOffset.UtcNow, "https://github.com/loxsmoke/mindmap/releases/download/v1.2.3/MindMap-1.2.3-setup.exe", 10);
 
         Assert.Equal(UpdateCheck.BannerState.Shown, UpdateCheck.Decide(release, dismissed: null));
         Assert.Equal(UpdateCheck.BannerState.Hidden, UpdateCheck.Decide(release, dismissed: "1.2.3"));
+    }
+
+    [Fact]
+    public void SetupAssetNameUsesReleaseInstallerName()
+    {
+        Assert.Equal("MindMap-1.2.3-setup.exe", UpdateCheck.SetupAssetName("1.2.3"));
     }
 
     [Fact]
@@ -37,7 +43,14 @@ public sealed class UpdateCheckTests
         using var http = new HttpClient(new JsonHandler("""
             {
               "tag_name": "v0.2.0",
-              "published_at": "2026-08-18T12:00:00Z"
+              "published_at": "2026-08-18T12:00:00Z",
+              "assets": [
+                {
+                  "name": "MindMap-0.2.0-setup.exe",
+                  "browser_download_url": "https://github.com/loxsmoke/mindmap/releases/download/v0.2.0/MindMap-0.2.0-setup.exe",
+                  "size": 12345
+                }
+              ]
             }
             """));
 
@@ -46,6 +59,18 @@ public sealed class UpdateCheckTests
         Assert.NotNull(release);
         Assert.Equal("0.2.0", release.Version);
         Assert.Equal(DateTimeOffset.Parse("2026-08-18T12:00:00Z"), release.PublishedAt);
+        Assert.Equal("https://github.com/loxsmoke/mindmap/releases/download/v0.2.0/MindMap-0.2.0-setup.exe", release.SetupUrl);
+        Assert.Equal(12345, release.SetupSize);
+    }
+
+    [Theory]
+    [InlineData("https://github.com/loxsmoke/mindmap/releases/download/v1.2.3/MindMap-1.2.3-setup.exe", true)]
+    [InlineData("https://objects.githubusercontent.com/github-production-release-asset/file.exe", true)]
+    [InlineData("http://github.com/loxsmoke/mindmap/releases/download/v1.2.3/MindMap-1.2.3-setup.exe", false)]
+    [InlineData("https://example.com/MindMap-1.2.3-setup.exe", false)]
+    public void UpdateInstallerAllowsOnlyTrustedHttpsReleaseUrls(string url, bool expected)
+    {
+        Assert.Equal(expected, UpdateInstaller.IsTrustedUrl(url));
     }
 
     private sealed class JsonHandler(string json) : HttpMessageHandler

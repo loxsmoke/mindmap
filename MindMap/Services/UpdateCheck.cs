@@ -6,6 +6,8 @@ public static class UpdateCheck
 {
     public static readonly TimeSpan CheckInterval = TimeSpan.FromHours(24);
 
+    public static string SetupAssetName(string version) => $"{Brand.AppName}-{version}-setup.exe";
+
     public enum BannerState
     {
         Unchanged,
@@ -42,4 +44,4 @@ public static class UpdateCheck
         new(version.Major, version.Minor, version.Build < 0 ? 0 : version.Build);
 }
 
-public sealed record ReleaseInfo(string Version, DateTimeOffset PublishedAt);
+public sealed record ReleaseInfo(string Version, DateTimeOffset PublishedAt, string? SetupUrl, long SetupSize);
