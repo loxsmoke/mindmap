@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-test:
+    # Windows runner because this is a desktop Avalonia app published for Windows.
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore MindMap.slnx
+
+      - name: Build
+        run: dotnet build MindMap.slnx --configuration Release --no-restore
+
+      - name: Test with coverage
+        run: >
+          dotnet test MindMap.slnx
+          --configuration Release
+          --no-build
+          --verbosity normal
+          --collect:"XPlat Code Coverage"
+          --results-directory TestResults
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: TestResults/**/coverage.cobertura.xml
+
+      - name: Update coverage badge endpoint
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        shell: pwsh
+        run: |
+          $coveragePath = Get-ChildItem TestResults -Recurse -Filter coverage.cobertura.xml | Select-Object -First 1
+          if (-not $coveragePath) {
+            Write-Error "coverage.cobertura.xml was not found"
+            exit 1
+          }
+
+          [xml]$coverage = Get-Content $coveragePath.FullName
+          $percent = [math]::Round(([double]$coverage.coverage.'line-rate') * 100, 1)
+          $color = if ($percent -ge 90) {
+            "brightgreen"
+          } elseif ($percent -ge 80) {
+            "green"
+          } elseif ($percent -ge 70) {
+            "yellowgreen"
+          } elseif ($percent -ge 60) {
+            "yellow"
+          } elseif ($percent -ge 50) {
+            "orange"
+          } else {
+            "red"
+          }
+
+          New-Item -ItemType Directory -Force -Path .github/badges | Out-Null
+          @{
+            schemaVersion = 1
+            label = "coverage"
+            message = "$percent%"
+            color = $color
+          } | ConvertTo-Json -Compress | Set-Content -NoNewline .github/badges/code-coverage.json
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/badges/code-coverage.json
+
+          if (git diff --cached --quiet) {
+            Write-Host "Coverage badge endpoint is already up to date."
+          } else {
+            git commit -m "Update coverage badge [skip ci]"
+            git push
+          }
