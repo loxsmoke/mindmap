@@ -1,10 +1,11 @@
 name: Release
 
 # Manually triggered. Computes the next version from version.win (dry run),
-# stamps it into MindMap, builds a portable Windows release, then only after the
-# build succeeds reserves the version on version.win, commits and tags the bump,
-# and publishes a GitHub Release with the portable zip attached. The dry run
-# means a failed build does not burn a version number.
+# stamps it into MindMap, builds an installable Windows release, then only
+# after the build succeeds reserves the version on version.win, commits and
+# tags the bump, and publishes a GitHub Release with the installer and a
+# portable zip attached. The dry run means a failed build does not burn a
+# version number.
 on:
   workflow_dispatch:
     inputs:
@@ -127,6 +128,18 @@ jobs:
           Compress-Archive -Path "${{ env.PUBLISH_DIR }}/*" `
             -DestinationPath "artifacts/MindMap-${{ steps.version.outputs.project }}-${{ env.RID }}-portable.zip"
 
+      # Inno Setup ships preinstalled on the windows-latest runner image.
+      - name: Build installer
+        shell: pwsh
+        run: |
+          $publish = (Resolve-Path "${{ env.PUBLISH_DIR }}").Path
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" `
+            "/DAppVersion=${{ steps.version.outputs.project }}" `
+            "/DSourceDir=$publish" `
+            "/DAppUrl=https://github.com/${{ github.repository }}" `
+            build/MindMap.iss
+          Copy-Item "build/installer/MindMap-${{ steps.version.outputs.project }}-setup.exe" -Destination artifacts/
+
       # Build succeeded, so now actually consume the version on version.win.
       - name: Reserve version on version.win
         shell: bash
@@ -190,4 +203,5 @@ jobs:
           prerelease: ${{ inputs.postfix != '' }}
           generate_release_notes: true
           files: |
+            artifacts/MindMap-${{ steps.version.outputs.project }}-setup.exe
             artifacts/MindMap-${{ steps.version.outputs.project }}-${{ env.RID }}-portable.zip
