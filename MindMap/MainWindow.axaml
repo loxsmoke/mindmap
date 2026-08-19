@@ -1,0 +1,101 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ctrl="clr-namespace:MindMap.Controls"
+        mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="720"
+        x:Class="MindMap.MainWindow"
+        Width="1100" Height="720"
+        MinWidth="640" MinHeight="420"
+        Icon="Assets/app-icon.ico"
+        Title="MindMap">
+
+    <Window.Styles>
+        <Style Selector="Button.tool">
+            <Setter Property="Padding" Value="12,6" />
+            <Setter Property="Margin" Value="2,0" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Border.sep">
+            <Setter Property="Width" Value="1" />
+            <Setter Property="Margin" Value="8,6" />
+            <Setter Property="Background" Value="#D7DBE0" />
+        </Style>
+    </Window.Styles>
+
+    <DockPanel>
+        <!-- Toolbar -->
+        <Border DockPanel.Dock="Top" Background="#FFFFFF" BorderBrush="#E4E7EC"
+                BorderThickness="0,0,0,1" Padding="10,8">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <Menu VerticalAlignment="Center">
+                    <MenuItem Header="File">
+                        <MenuItem Name="NewMenuItem" Header="New" InputGesture="Ctrl+N" />
+                        <MenuItem Name="OpenMenuItem" Header="Open&#x2026;" InputGesture="Ctrl+O" />
+                        <MenuItem Name="RecentMenuItem" Header="Open recent" />
+                        <MenuItem Name="SaveMenuItem" Header="Save" InputGesture="Ctrl+S" />
+                        <MenuItem Name="ExportMenuItem" Header="Export&#x2026;" />
+                        <Separator />
+                        <MenuItem Name="AboutMenuItem" Header="About" />
+                        <Separator />
+                        <MenuItem Name="ExitMenuItem" Header="Exit" />
+                    </MenuItem>
+                    <MenuItem Header="Edit">
+                        <MenuItem Name="UndoMenuItem" Header="Undo" InputGesture="Ctrl+Z" />
+                        <MenuItem Name="SelectAllMenuItem" Header="Select all" InputGesture="Ctrl+A" />
+                        <MenuItem Name="NewRootMenuItem" Header="New root" />
+                        <MenuItem Name="DeleteMenuItem" Header="Delete" InputGesture="Delete" />
+                        <Separator />
+                        <MenuItem Name="CopyOutlineMenuItem" Header="Copy outline" InputGesture="Ctrl+C" />
+                        <MenuItem Name="PasteOutlineMenuItem" Header="Paste outline" InputGesture="Ctrl+V" />
+                    </MenuItem>
+                </Menu>
+                <Border Classes="sep" />
+                <TextBlock Text="Color" VerticalAlignment="Center"
+                           Margin="4,0,6,0" Foreground="#667085" />
+                <StackPanel Name="Swatches" Orientation="Horizontal" VerticalAlignment="Center" />
+                <StackPanel Name="TextAlignmentButtons" Orientation="Horizontal" VerticalAlignment="Center"
+                            Margin="8,0,0,0" />
+                <Border Classes="sep" />
+                <Button Classes="tool" Name="LayoutBtn" Content="Layout"
+                        ToolTip.Tip="Rebuild the mind map layout" />
+                <Border Classes="sep" />
+                <Button Classes="tool" Name="ZoomOutBtn" Content="−" Width="34" />
+                <TextBlock Name="ZoomLabel" Text="100%" VerticalAlignment="Center"
+                           Width="52" TextAlignment="Center" Foreground="#344054" />
+                <Button Classes="tool" Name="ZoomInBtn" Content="+" Width="34" />
+                <Button Classes="tool" Name="FitBtn" Content="Fit" />
+            </StackPanel>
+        </Border>
+
+        <!-- Update notification -->
+        <Border Name="UpdateBanner" DockPanel.Dock="Top"
+                Background="#FFF8E1" BorderBrush="#F0C36D"
+                BorderThickness="0,0,0,1" Padding="10,8"
+                IsVisible="False">
+            <Grid ColumnDefinitions="*,Auto,Auto">
+                <TextBlock Name="UpdateBannerText" Grid.Column="0"
+                           VerticalAlignment="Center"
+                           FontWeight="SemiBold"
+                           TextTrimming="CharacterEllipsis" />
+                <Button Name="ViewUpdateBtn" Grid.Column="1"
+                        Content="View" MinWidth="60"
+                        Margin="8,0,0,0" />
+                <Button Name="DismissUpdateBtn" Grid.Column="2"
+                        Content="X" Width="28"
+                        Margin="4,0,0,0" />
+            </Grid>
+        </Border>
+
+        <!-- Status bar -->
+        <Border DockPanel.Dock="Bottom" Background="#FFFFFF" BorderBrush="#E4E7EC"
+                BorderThickness="0,1,0,0" Padding="10,4">
+            <TextBlock Name="StatusLabel" Foreground="#667085"
+                       Text="Ready" VerticalAlignment="Center" />
+        </Border>
+
+        <!-- Canvas -->
+        <ctrl:MindMapEditor Name="Editor" />
+    </DockPanel>
+</Window>

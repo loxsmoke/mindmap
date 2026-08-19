@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="MindMap\MindMap.csproj" />
+  <Project Path="MindMap.Tests\MindMap.Tests.csproj" />
+</Solution>
