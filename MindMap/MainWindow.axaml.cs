@@ -61,10 +61,7 @@ public partial class MainWindow : Window
     private static Color IconStrokeColor { get; } = Color.Parse("#1C1E21");
     private static Color LinkTextColor { get; } = Color.Parse("#0969DA");
     private static string AppVersion { get; } =
-        Assembly.GetExecutingAssembly()
-            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
-            ?.InformationalVersion
-        ?? "0.1.0";
+        FormatDisplayVersion(Assembly.GetExecutingAssembly().GetName().Version);
 
     private static readonly FilePickerFileType MapFileType = new("Mind map")
     {
@@ -1259,6 +1256,8 @@ public partial class MainWindow : Window
     }
 
     internal static string BuildAboutTitle(string appVersion) => $"MindMap v{appVersion}";
+
+    internal static string FormatDisplayVersion(Version? version) => version?.ToString(3) ?? "0.1.0";
 
     private sealed class TextAlignmentIcon : Control
     {

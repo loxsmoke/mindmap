@@ -19,4 +19,10 @@ public sealed class MainWindowTests
     {
         Assert.Equal("MindMap v0.1.0", MainWindow.BuildAboutTitle("0.1.0"));
     }
+
+    [Fact]
+    public void FormatDisplayVersionUsesThreePartNumericVersion()
+    {
+        Assert.Equal("1.2.3", MainWindow.FormatDisplayVersion(new Version(1, 2, 3, 4)));
+    }
 }
