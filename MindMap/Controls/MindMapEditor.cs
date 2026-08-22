@@ -47,10 +47,12 @@ public sealed class MindMapEditor : Canvas
     private Point _pressWorld;
     private bool _spaceDown;
     private string? _hoverNodeId;
+    private string? _dropParentCandidateId;
 
     // Moving
     private readonly Dictionary<string, Point> _moveOrigin = new();
     private MindMapDocument? _pendingMoveSnapshot;
+    private string? _dragPrimaryNodeId;
     // Marquee
     private Rect _marquee;
     // Connecting
@@ -71,6 +73,7 @@ public sealed class MindMapEditor : Canvas
     private const int UndoLimit = 100;
     private const double ChildHorizontalGap = 90;
     private const double ChildVerticalGap = 24;
+    private const double ReparentOverlapThreshold = 0.20;
     #region Colors
     private static Color CanvasBackgroundColor { get; } = Color.Parse("#F5F6F8");
     private static Color EditorBorderColor { get; } = Color.Parse("#1C1E21");
@@ -129,6 +132,37 @@ public sealed class MindMapEditor : Canvas
         EnsureNodeVisible(child);
         RaiseChanged();
         return child;
+    }
+
+    internal bool TestReparentNode(string nodeId, string newParentId)
+    {
+        var changed = ReparentNode(nodeId, newParentId);
+        if (changed)
+        {
+            SelectOnly(nodeId);
+            RaiseSelectionChanged();
+            RaiseChanged();
+        }
+        return changed;
+    }
+
+    internal bool TestMoveNodeAndResolveDrag(string nodeId, double x, double y)
+    {
+        var node = NodeById(nodeId);
+        if (node == null) return false;
+
+        SelectOnly(nodeId);
+        _dragPrimaryNodeId = nodeId;
+        _moveOrigin.Clear();
+        foreach (var n in NodesToMoveForDrag(nodeId)) _moveOrigin[n.Id] = new Point(n.X, n.Y);
+        node.X = x;
+        node.Y = y;
+        var changed = TryReparentMovedNode(new Point(node.CenterX, node.CenterY)) || TryReflowMovedBranch();
+        _moveOrigin.Clear();
+        _dragPrimaryNodeId = null;
+        _dropParentCandidateId = null;
+        if (changed) RaiseChanged();
+        return changed;
     }
 
     internal void TestEnsureNodeVisible(string nodeId)
@@ -470,6 +504,20 @@ public sealed class MindMapEditor : Canvas
         return null;
     }
 
+    private MindMapNode? HitTestNode(Point world, HashSet<string> excluded)
+    {
+        // Reverse so the topmost (last drawn) node wins.
+        for (int i = _doc.Nodes.Count - 1; i >= 0; i--)
+        {
+            var n = _doc.Nodes[i];
+            if (excluded.Contains(n.Id)) continue;
+            if (world.X >= n.X && world.X <= n.X + n.Width &&
+                world.Y >= n.Y && world.Y <= n.Y + n.Height)
+                return n;
+        }
+        return null;
+    }
+
     private bool HandleHit(MindMapNode n, Point world)
     {
         double hx = n.X + n.Width;
@@ -565,8 +613,9 @@ public sealed class MindMapEditor : Canvas
             // actually moves (see the release handler), so a plain click doesn't record one.
             _mode = DragMode.MovingNodes;
             _pendingMoveSnapshot = _doc.Clone();
+            _dragPrimaryNodeId = hit.Id;
             _moveOrigin.Clear();
-            foreach (var n in SelectedNodes()) _moveOrigin[n.Id] = new Point(n.X, n.Y);
+            foreach (var n in NodesToMoveForDrag(hit.Id)) _moveOrigin[n.Id] = new Point(n.X, n.Y);
         }
         else
         {
@@ -609,6 +658,7 @@ public sealed class MindMapEditor : Canvas
                     n.X = kv.Value.X + dx;
                     n.Y = kv.Value.Y + dy;
                 }
+                _dropParentCandidateId = FindReparentCandidate(world)?.Id;
                 UpdateEditorPosition();
                 _layer.InvalidateVisual();
                 return;
@@ -652,13 +702,16 @@ public sealed class MindMapEditor : Canvas
                     var n = NodeById(kv.Key);
                     return n != null && (n.X != kv.Value.X || n.Y != kv.Value.Y);
                 });
-                if (moved && _pendingMoveSnapshot != null)
+                bool reparented = TryReparentMovedNode(world);
+                bool reflowed = !reparented && TryReflowMovedBranch();
+                if ((moved || reparented || reflowed) && _pendingMoveSnapshot != null)
                 {
                     _undo.Add(_pendingMoveSnapshot);
                     if (_undo.Count > UndoLimit) _undo.RemoveAt(0);
                 }
                 _pendingMoveSnapshot = null;
-                RaiseChanged();
+                _dragPrimaryNodeId = null;
+                if (moved || reparented || reflowed) RaiseChanged();
                 break;
             }
 
@@ -713,6 +766,8 @@ public sealed class MindMapEditor : Canvas
 
         _mode = DragMode.None;
         _connectFromId = null;
+        _dropParentCandidateId = null;
+        _dragPrimaryNodeId = null;
         e.Pointer.Capture(null);
         _layer.InvalidateVisual();
     }
@@ -870,6 +925,131 @@ public sealed class MindMapEditor : Canvas
             }
         }
         return false;
+    }
+
+    private bool TryReparentMovedNode(Point pointerWorld)
+    {
+        if (_dragPrimaryNodeId == null || !_selected.SetEquals(new[] { _dragPrimaryNodeId })) return false;
+        var nodeId = _dragPrimaryNodeId;
+        var candidate = _dropParentCandidateId != null
+            ? NodeById(_dropParentCandidateId)
+            : FindReparentCandidate(pointerWorld);
+        return candidate != null && ReparentNode(nodeId, candidate.Id);
+    }
+
+    private MindMapNode? FindReparentCandidate(Point pointerWorld)
+    {
+        if (_dragPrimaryNodeId == null || !_selected.SetEquals(new[] { _dragPrimaryNodeId })) return null;
+
+        var nodeId = _dragPrimaryNodeId;
+        var dragged = NodeById(nodeId);
+        if (dragged == null) return null;
+
+        var excluded = DescendantIds(nodeId);
+        excluded.Add(nodeId);
+
+        var directHit = HitTestNode(pointerWorld, excluded);
+        if (directHit != null && CanReparentNode(nodeId, directHit.Id)) return directHit;
+
+        var draggedRect = new Rect(dragged.X, dragged.Y, dragged.Width, dragged.Height);
+        return _doc.Nodes
+            .Where(n => !excluded.Contains(n.Id) && CanReparentNode(nodeId, n.Id))
+            .Select(n => new
+            {
+                Node = n,
+                Overlap = OverlapArea(draggedRect, new Rect(n.X, n.Y, n.Width, n.Height)),
+                Distance = DistanceSquared(new Point(dragged.CenterX, dragged.CenterY), new Point(n.CenterX, n.CenterY)),
+            })
+            .Where(x => x.Overlap / Math.Min(dragged.Width * dragged.Height, x.Node.Width * x.Node.Height) >= ReparentOverlapThreshold)
+            .OrderByDescending(x => x.Overlap)
+            .ThenBy(x => x.Distance)
+            .Select(x => x.Node)
+            .FirstOrDefault();
+    }
+
+    private bool TryReflowMovedBranch()
+    {
+        if (_dragPrimaryNodeId == null || !_selected.SetEquals(new[] { _dragPrimaryNodeId })) return false;
+
+        var node = NodeById(_dragPrimaryNodeId);
+        if (node == null) return false;
+
+        var root = RootOf(node.Id);
+        if (root == null || root.Id == node.Id) return false;
+
+        ReflowTree(root);
+        return true;
+    }
+
+    private IEnumerable<MindMapNode> NodesToMoveForDrag(string primaryNodeId)
+    {
+        var ids = _selected.ToHashSet();
+        if (ids.SetEquals(new[] { primaryNodeId }))
+            ids.UnionWith(DescendantIds(primaryNodeId));
+
+        foreach (var node in _doc.Nodes.Where(n => ids.Contains(n.Id)))
+            yield return node;
+    }
+
+    private bool CanReparentNode(string nodeId, string newParentId)
+    {
+        if (nodeId == newParentId) return false;
+        if (IsReachable(nodeId, newParentId)) return false;
+
+        var currentParent = _doc.Connections.FirstOrDefault(c => c.ToId == nodeId)?.FromId;
+        return currentParent != newParentId;
+    }
+
+    private bool ReparentNode(string nodeId, string newParentId)
+    {
+        if (!CanReparentNode(nodeId, newParentId)) return false;
+
+        var node = NodeById(nodeId);
+        var newParent = NodeById(newParentId);
+        if (node == null || newParent == null) return false;
+
+        var oldRoot = RootOf(nodeId);
+        _doc.Connections.RemoveAll(c => c.ToId == nodeId);
+
+        var newConnection = new MindMapConnection { FromId = newParentId, ToId = nodeId };
+        var insertIndex = _doc.Connections.FindLastIndex(c => c.FromId == newParentId);
+        if (insertIndex >= 0) _doc.Connections.Insert(insertIndex + 1, newConnection);
+        else _doc.Connections.Add(newConnection);
+
+        var newRoot = RootOf(newParentId);
+        if (oldRoot != null && newRoot?.Id != oldRoot.Id) ReflowTree(oldRoot);
+        ReflowTree(newRoot ?? oldRoot);
+        return true;
+    }
+
+    private HashSet<string> DescendantIds(string nodeId)
+    {
+        var result = new HashSet<string>();
+        var stack = new Stack<string>(_doc.Connections.Where(c => c.FromId == nodeId).Select(c => c.ToId));
+        while (stack.Count > 0)
+        {
+            var current = stack.Pop();
+            if (!result.Add(current)) continue;
+            foreach (var child in _doc.Connections.Where(c => c.FromId == current).Select(c => c.ToId))
+                stack.Push(child);
+        }
+        return result;
+    }
+
+    private static double OverlapArea(Rect a, Rect b)
+    {
+        var left = Math.Max(a.Left, b.Left);
+        var right = Math.Min(a.Right, b.Right);
+        var top = Math.Max(a.Top, b.Top);
+        var bottom = Math.Min(a.Bottom, b.Bottom);
+        return Math.Max(0, right - left) * Math.Max(0, bottom - top);
+    }
+
+    private static double DistanceSquared(Point a, Point b)
+    {
+        var dx = a.X - b.X;
+        var dy = a.Y - b.Y;
+        return dx * dx + dy * dy;
     }
 
     private void AddChildOfSelected(bool leftOfRoot = false)
@@ -1384,6 +1564,7 @@ public sealed class MindMapEditor : Canvas
                 ? new SolidColorBrush(Color.Parse(n.Color))
                 : Brushes.White;
             bool selected = includeSelection && _selected.Contains(n.Id);
+            bool dropParentCandidate = includeSelection && n.Id == _dropParentCandidateId;
 
             // Auto-grow height to fit wrapped text.
             var ft = MakeText(n);
@@ -1396,8 +1577,10 @@ public sealed class MindMapEditor : Canvas
                 ? EditorBorderColor
                 : selected
                 ? EditorBorderColor
+                : dropParentCandidate
+                ? EditorBorderColor
                 : (Luminance(n.Color) > 0.85 ? LightNodeBorderColor : Color.Parse(n.Color));
-            var pen = new Pen(new SolidColorBrush(borderColor), selected ? 3 : 1.5);
+            var pen = new Pen(new SolidColorBrush(borderColor), selected || dropParentCandidate ? 3 : 1.5);
             ctx.DrawRectangle(fill, pen, rect, 10, 10);
 
             if (!includeSelection || n.Id != _editingNodeId)

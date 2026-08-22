@@ -75,6 +75,56 @@ public sealed class MindMapEditorTests
     }
 
     [Fact]
+    public void ReparentingNodeMovesItUnderNewParentAndRemovesOldParentLink()
+    {
+        var editor = new MindMapEditor();
+        editor.LoadDocument(OutlineDocument());
+        var doc = editor.GetDocument();
+        var alphaChild = doc.Nodes.Single(n => n.Text == "Alpha child");
+        var beta = doc.Nodes.Single(n => n.Text == "Beta");
+
+        var changed = editor.TestReparentNode(alphaChild.Id, beta.Id);
+
+        Assert.True(changed);
+        Assert.DoesNotContain(doc.Connections, c => c.FromId != beta.Id && c.ToId == alphaChild.Id);
+        Assert.Contains(doc.Connections, c => c.FromId == beta.Id && c.ToId == alphaChild.Id);
+        Assert.True(alphaChild.X > beta.X);
+    }
+
+    [Fact]
+    public void ReparentingNodeOntoDescendantIsRejected()
+    {
+        var editor = new MindMapEditor();
+        editor.LoadDocument(OutlineDocument());
+        var doc = editor.GetDocument();
+        var alpha = doc.Nodes.Single(n => n.Text == "Alpha");
+        var alphaChild = doc.Nodes.Single(n => n.Text == "Alpha child");
+
+        var changed = editor.TestReparentNode(alpha.Id, alphaChild.Id);
+
+        Assert.False(changed);
+        Assert.Contains(doc.Connections, c => c.FromId == alpha.Id && c.ToId == alphaChild.Id);
+    }
+
+    [Fact]
+    public void DraggingRootBranchAcrossRootMovesBranchToOtherSide()
+    {
+        var editor = new MindMapEditor();
+        editor.LoadDocument(OutlineDocument());
+        var doc = editor.GetDocument();
+        var root = doc.Nodes.Single(n => n.Text == "Root");
+        var alpha = doc.Nodes.Single(n => n.Text == "Alpha");
+        var alphaChild = doc.Nodes.Single(n => n.Text == "Alpha child");
+
+        var changed = editor.TestMoveNodeAndResolveDrag(alpha.Id, root.X - 260, alpha.Y);
+
+        Assert.True(changed);
+        Assert.Contains(doc.Connections, c => c.FromId == root.Id && c.ToId == alpha.Id);
+        Assert.True(alpha.CenterX < root.CenterX);
+        Assert.True(alphaChild.CenterX < alpha.CenterX);
+    }
+
+    [Fact]
     public void EnsuringFocusedNodeVisiblePansViewportToContainIt()
     {
         var editor = new MindMapEditor
