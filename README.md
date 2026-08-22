@@ -1,5 +1,7 @@
 # MindMap
 
+[Download the latest version here](https://github.com/loxsmoke/mindmap/releases/latest)
+
 [![Downloads](https://img.shields.io/github/downloads/loxsmoke/mindmap/total?label=downloads)](https://github.com/loxsmoke/mindmap/releases)
 [![Latest version](https://img.shields.io/github/v/release/loxsmoke/mindmap?label=latest)](https://github.com/loxsmoke/mindmap/releases/latest)
 [![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Floxsmoke%2Fmindmap%2Fmain%2F.github%2Fbadges%2Fcode-coverage.json)](https://github.com/loxsmoke/mindmap/actions/workflows/ci.yml)
