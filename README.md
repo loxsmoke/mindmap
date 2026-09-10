@@ -2,6 +2,8 @@
 
 [Download the latest version here](https://github.com/loxsmoke/mindmap/releases/latest)
 
+MindMap is available for Windows and macOS.
+
 [![Downloads](https://img.shields.io/github/downloads/loxsmoke/mindmap/total?label=downloads)](https://github.com/loxsmoke/mindmap/releases)
 [![Latest version](https://img.shields.io/github/v/release/loxsmoke/mindmap?label=latest)](https://github.com/loxsmoke/mindmap/releases/latest)
 [![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Floxsmoke%2Fmindmap%2Fmain%2F.github%2Fbadges%2Fcode-coverage.json)](https://github.com/loxsmoke/mindmap/actions/workflows/ci.yml)
@@ -13,7 +15,7 @@ MindMap is a lightweight desktop app for creating and editing mind maps. It prov
 
 ![MindMap screenshot](screenshot.png)
 
-[OSI model sample](https://loxsmoke.github.io/mindmap/samples/osi-model.html) - this is a sample mindmap and the link is to the exported HTML rendered in a new page.
+[OSI model sample](https://raw.githack.com/loxsmoke/mindmap/main/samples/osi-model.html) - this is a sample mindmap and the link is to the exported HTML rendered in a new page.
 
 ## Features
 
@@ -22,5 +24,5 @@ MindMap is a lightweight desktop app for creating and editing mind maps. It prov
 - Connect nodes into a clean hierarchy.
 - Edit node text inline.
 - Change node colors and text alignment.
-- Copy and paste indented outlines.
+- Copy and paste indented outlines between MindMap and other mind map tools, including Whimsical charts.
 - Save maps as `.mmap` files and export them as PNG, JPEG, or standalone HTML files.
