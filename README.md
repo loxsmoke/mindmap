@@ -13,7 +13,7 @@ MindMap is a lightweight desktop app for creating and editing mind maps. It prov
 
 ![MindMap screenshot](screenshot.png)
 
-[OSI model sample](samples/osi-model.html) - this is a sample mindmap and the link is to the exported HTML.
+[OSI model sample](https://loxsmoke.github.io/mindmap/samples/osi-model.html) - this is a sample mindmap and the link is to the exported HTML rendered in a new page.
 
 ## Features
 
