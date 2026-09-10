@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using Avalonia.Controls;
@@ -87,6 +88,12 @@ public partial class MainWindow : Window
     {
         Patterns = new[] { "*.jpg", "*.jpeg" },
         MimeTypes = new[] { "image/jpeg" },
+    };
+
+    private static readonly FilePickerFileType HtmlFileType = new("HTML document")
+    {
+        Patterns = new[] { "*.html", "*.htm" },
+        MimeTypes = new[] { "text/html" },
     };
 
     public MainWindow()
@@ -538,11 +545,30 @@ public partial class MainWindow : Window
         var target = await PickExportTarget();
         if (target == null) return;
 
-        var settings = await ShowExportSettingsDialog(target.Extension);
-        if (settings == null) return;
-
         try
         {
+            if (target.Extension == "html")
+            {
+                var html = _editor.ExportHtml(GetCurrentDocumentStem());
+                var htmlPath = target.File.TryGetLocalPath();
+                if (htmlPath != null)
+                {
+                    await File.WriteAllTextAsync(htmlPath, html, Encoding.UTF8);
+                }
+                else
+                {
+                    await using var stream = await target.File.OpenWriteAsync();
+                    await using var writer = new StreamWriter(stream, Encoding.UTF8);
+                    await writer.WriteAsync(html);
+                }
+
+                _status.Text = $"Exported {target.File.Name}";
+                return;
+            }
+
+            var settings = await ShowExportSettingsDialog(target.Extension);
+            if (settings == null) return;
+
             using var bitmap = _editor.ExportImage(
                 settings.Padding,
                 settings.Width,
@@ -572,15 +598,15 @@ public partial class MainWindow : Window
         var suggestedFolder = await StorageProvider.TryGetFolderFromPathAsync(suggestedDirectory);
         var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
-            Title = "Export Image",
+            Title = "Export Mind Map",
             SuggestedStartLocation = suggestedFolder,
             SuggestedFileName = $"{GetCurrentDocumentStem()}.png",
             DefaultExtension = "png",
-            FileTypeChoices = new[] { PngFileType, JpegFileType },
+            FileTypeChoices = new[] { PngFileType, JpegFileType, HtmlFileType },
         });
         if (file == null) return null;
 
-        var extension = NormalizeImageExtension(Path.GetExtension(file.Name));
+        var extension = NormalizeExportExtension(Path.GetExtension(file.Name));
         return new ExportTarget(file, extension);
     }
 
@@ -888,9 +914,10 @@ public partial class MainWindow : Window
         form.Children.Add(value);
     }
 
-    private static string NormalizeImageExtension(string? extension)
+    private static string NormalizeExportExtension(string? extension)
     {
         extension = extension?.TrimStart('.').ToLowerInvariant();
+        if (extension is "html" or "htm") return "html";
         return extension is "jpg" or "jpeg" ? "jpg" : "png";
     }
 

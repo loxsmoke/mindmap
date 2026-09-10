@@ -1,0 +1,265 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>osi-model</title>
+  <style>
+    :root { color-scheme: light; font-family: Inter, Segoe UI, system-ui, sans-serif; }
+    body { margin: 0; background: #f0f2f5; color: #1c1e21; }
+    main { min-height: 100vh; padding: 24px; box-sizing: border-box; display: grid; grid-template-rows: auto 1fr; gap: 16px; }
+    h1 { margin: 0; font-size: 20px; font-weight: 650; }
+    .viewport { min-height: 0; overflow: auto; background: #fff; border: 1px solid #d0d5dd; border-radius: 8px; }
+    svg { display: block; width: max(100%, 960px); height: auto; background: #fff; }
+    .canvas { fill: #fff; }
+    .node-label { box-sizing: border-box; height: 100%; padding: 10px; display: flex; align-items: center; font-size: 14px; line-height: 1.25; overflow-wrap: anywhere; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>osi-model</h1>
+    <div class="viewport">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="-653 -526 1306 1052" role="img" aria-label="osi-model">
+        <rect class="canvas" x="-653" y="-526" width="1306" height="1052" />
+        <path d="M 85 0 C 130 0, 130 -350, 175 -350" fill="none" stroke="#4C6EF5" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M 85 0 C 130 0, 130 -105, 175 -105" fill="none" stroke="#F03E3E" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M 85 0 C 130 0, 130 105, 175 105" fill="none" stroke="#F59F00" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M 85 0 C 130 0, 130 350, 175 350" fill="none" stroke="#37B24D" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M -85 0 C -130 0, -130 -280, -175 -280" fill="none" stroke="#7048E8" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M -85 0 C -130 0, -130 0, -175 0" fill="none" stroke="#1098AD" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M -85 0 C -130 0, -130 280, -175 280" fill="none" stroke="#E64980" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M 345 -350 C 390 -350, 390 -455, 435 -455" fill="none" stroke="#4C6EF5" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M 345 -350 C 390 -350, 390 -385, 435 -385" fill="none" stroke="#4C6EF5" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M 345 -350 C 390 -350, 390 -315, 435 -315" fill="none" stroke="#4C6EF5" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M 345 -350 C 390 -350, 390 -245, 435 -245" fill="none" stroke="#4C6EF5" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M 345 -105 C 390 -105, 390 -175, 435 -175" fill="none" stroke="#F03E3E" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M 345 -105 C 390 -105, 390 -105, 435 -105" fill="none" stroke="#F03E3E" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M 345 -105 C 390 -105, 390 -35, 435 -35" fill="none" stroke="#F03E3E" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M 345 105 C 390 105, 390 35, 435 35" fill="none" stroke="#F59F00" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M 345 105 C 390 105, 390 105, 435 105" fill="none" stroke="#F59F00" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M 345 105 C 390 105, 390 175, 435 175" fill="none" stroke="#F59F00" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M 345 350 C 390 350, 390 245, 435 245" fill="none" stroke="#37B24D" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M 345 350 C 390 350, 390 315, 435 315" fill="none" stroke="#37B24D" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M 345 350 C 390 350, 390 385, 435 385" fill="none" stroke="#37B24D" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M 345 350 C 390 350, 390 455, 435 455" fill="none" stroke="#37B24D" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M -345 -280 C -390 -280, -390 -385, -435 -385" fill="none" stroke="#7048E8" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M -345 -280 C -390 -280, -390 -315, -435 -315" fill="none" stroke="#7048E8" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M -345 -280 C -390 -280, -390 -245, -435 -245" fill="none" stroke="#7048E8" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M -345 -280 C -390 -280, -390 -175, -435 -175" fill="none" stroke="#7048E8" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M -345 0 C -390 0, -390 -105, -435 -105" fill="none" stroke="#1098AD" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M -345 0 C -390 0, -390 -35, -435 -35" fill="none" stroke="#1098AD" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M -345 0 C -390 0, -390 35, -435 35" fill="none" stroke="#1098AD" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M -345 0 C -390 0, -390 105, -435 105" fill="none" stroke="#1098AD" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M -345 280 C -390 280, -390 175, -435 175" fill="none" stroke="#E64980" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M -345 280 C -390 280, -390 245, -435 245" fill="none" stroke="#E64980" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M -345 280 C -390 280, -390 315, -435 315" fill="none" stroke="#E64980" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M -345 280 C -390 280, -390 385, -435 385" fill="none" stroke="#E64980" stroke-width="2.5" stroke-linecap="round" />
+        <g id="node-291b45deb0ab4fbf905e4a3a5a8018c7">
+          <rect x="-85" y="-23" width="170" height="46" rx="10" ry="10" fill="#4C6EF5" stroke="#4C6EF5" stroke-width="1.5" />
+          <foreignObject x="-85" y="-23" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #FFFFFF; text-align: left; justify-content: flex-start;">OSI Model</div>
+          </foreignObject>
+        </g>
+        <g id="node-09f6fba580d34cbc862367b1a2c4937d">
+          <rect x="175" y="-373" width="170" height="46" rx="10" ry="10" fill="#F03E3E" stroke="#F03E3E" stroke-width="1.5" />
+          <foreignObject x="175" y="-373" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #FFFFFF; text-align: left; justify-content: flex-start;">Application Layer</div>
+          </foreignObject>
+        </g>
+        <g id="node-a131fb821a8043f19e9d25a8465fd124">
+          <rect x="435" y="-478" width="170" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#CED4DA" stroke-width="1.5" />
+          <foreignObject x="435" y="-478" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">HTTP</div>
+          </foreignObject>
+        </g>
+        <g id="node-21abf1349ed34f49a5e6a2bdd46220a3">
+          <rect x="435" y="-408" width="170" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#CED4DA" stroke-width="1.5" />
+          <foreignObject x="435" y="-408" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">FTP</div>
+          </foreignObject>
+        </g>
+        <g id="node-c33ca6a535df43cfa3eaff6f5e475919">
+          <rect x="435" y="-338" width="170" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#CED4DA" stroke-width="1.5" />
+          <foreignObject x="435" y="-338" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">SMTP</div>
+          </foreignObject>
+        </g>
+        <g id="node-16ec707f78494fafa0af48f26b6d5ad4">
+          <rect x="435" y="-268" width="170" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#CED4DA" stroke-width="1.5" />
+          <foreignObject x="435" y="-268" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">DNS</div>
+          </foreignObject>
+        </g>
+        <g id="node-61660455dc4b4275b17702124d9617d2">
+          <rect x="175" y="-128" width="170" height="46" rx="10" ry="10" fill="#7048E8" stroke="#7048E8" stroke-width="1.5" />
+          <foreignObject x="175" y="-128" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #FFFFFF; text-align: left; justify-content: flex-start;">Presentation Layer</div>
+          </foreignObject>
+        </g>
+        <g id="node-1ca19e37040c4379a7957df1517b365d">
+          <rect x="435" y="-198" width="170" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#CED4DA" stroke-width="1.5" />
+          <foreignObject x="435" y="-198" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">Data translation</div>
+          </foreignObject>
+        </g>
+        <g id="node-de9e698886db4ca0a5e354f553c19140">
+          <rect x="435" y="-128" width="170" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#CED4DA" stroke-width="1.5" />
+          <foreignObject x="435" y="-128" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">Encryption</div>
+          </foreignObject>
+        </g>
+        <g id="node-212dbb6d4b7341fa8a9e74ef30f354ca">
+          <rect x="435" y="-58" width="170" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#CED4DA" stroke-width="1.5" />
+          <foreignObject x="435" y="-58" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">Compression</div>
+          </foreignObject>
+        </g>
+        <g id="node-4e227290ebe84ae8ada9b4367fb3ff0d">
+          <rect x="175" y="82" width="170" height="46" rx="10" ry="10" fill="#1098AD" stroke="#1098AD" stroke-width="1.5" />
+          <foreignObject x="175" y="82" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #FFFFFF; text-align: left; justify-content: flex-start;">Session Layer</div>
+          </foreignObject>
+        </g>
+        <g id="node-7e08056bcda4486b9ac82a2c153fb931">
+          <rect x="435" y="12" width="170" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#CED4DA" stroke-width="1.5" />
+          <foreignObject x="435" y="12" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">Session establishment</div>
+          </foreignObject>
+        </g>
+        <g id="node-a30cf83805ad446e8152aeb624c38d8a">
+          <rect x="435" y="82" width="170" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#CED4DA" stroke-width="1.5" />
+          <foreignObject x="435" y="82" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">Session management</div>
+          </foreignObject>
+        </g>
+        <g id="node-2949d8348bc24c18b1e35a407050a443">
+          <rect x="435" y="152" width="170" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#CED4DA" stroke-width="1.5" />
+          <foreignObject x="435" y="152" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">Session termination</div>
+          </foreignObject>
+        </g>
+        <g id="node-f4cab87731734be4a5a696a40fdebba4">
+          <rect x="175" y="327" width="170" height="46" rx="10" ry="10" fill="#E64980" stroke="#E64980" stroke-width="1.5" />
+          <foreignObject x="175" y="327" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #FFFFFF; text-align: left; justify-content: flex-start;">Transport Layer</div>
+          </foreignObject>
+        </g>
+        <g id="node-ab231fd0aa5f4436911fcbc139652872">
+          <rect x="435" y="222" width="170" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#CED4DA" stroke-width="1.5" />
+          <foreignObject x="435" y="222" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">TCP</div>
+          </foreignObject>
+        </g>
+        <g id="node-9d1a1aa8e5e84a739a70bd1ffce0aa76">
+          <rect x="435" y="292" width="170" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#CED4DA" stroke-width="1.5" />
+          <foreignObject x="435" y="292" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">UDP</div>
+          </foreignObject>
+        </g>
+        <g id="node-715a237f0b834657ab7e81526414c496">
+          <rect x="435" y="362" width="170" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#CED4DA" stroke-width="1.5" />
+          <foreignObject x="435" y="362" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">Segmentation</div>
+          </foreignObject>
+        </g>
+        <g id="node-c8a4e309c5524a1091acae240b227718">
+          <rect x="435" y="432" width="170" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#CED4DA" stroke-width="1.5" />
+          <foreignObject x="435" y="432" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">Flow control</div>
+          </foreignObject>
+        </g>
+        <g id="node-19c9de3d867845e3ad5e17b799d2ae85">
+          <rect x="-345" y="-303" width="170" height="46" rx="10" ry="10" fill="#F59F00" stroke="#F59F00" stroke-width="1.5" />
+          <foreignObject x="-345" y="-303" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">Network Layer</div>
+          </foreignObject>
+        </g>
+        <g id="node-5f448a2cedd0405491b527e676adaa82">
+          <rect x="-605" y="-408" width="170" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#CED4DA" stroke-width="1.5" />
+          <foreignObject x="-605" y="-408" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">IP</div>
+          </foreignObject>
+        </g>
+        <g id="node-63d22001868747acb42e60c8c55fd120">
+          <rect x="-605" y="-338" width="170" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#CED4DA" stroke-width="1.5" />
+          <foreignObject x="-605" y="-338" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">Routing</div>
+          </foreignObject>
+        </g>
+        <g id="node-a08be5e739ab48e38c678173f51a0334">
+          <rect x="-605" y="-268" width="170" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#CED4DA" stroke-width="1.5" />
+          <foreignObject x="-605" y="-268" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">Packet forwarding</div>
+          </foreignObject>
+        </g>
+        <g id="node-5bb60cd4ef3b411c98ee27cd0303f37c">
+          <rect x="-605" y="-198" width="170" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#CED4DA" stroke-width="1.5" />
+          <foreignObject x="-605" y="-198" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">Routers</div>
+          </foreignObject>
+        </g>
+        <g id="node-6e57c51c1e5844b68f59ad74ffae8a2e">
+          <rect x="-345" y="-23" width="170" height="46" rx="10" ry="10" fill="#37B24D" stroke="#37B24D" stroke-width="1.5" />
+          <foreignObject x="-345" y="-23" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #FFFFFF; text-align: left; justify-content: flex-start;">Data Link Layer</div>
+          </foreignObject>
+        </g>
+        <g id="node-3ecb33f824a040bf99ea6aaba8d6f8e2">
+          <rect x="-605" y="-128" width="170" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#CED4DA" stroke-width="1.5" />
+          <foreignObject x="-605" y="-128" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">Ethernet</div>
+          </foreignObject>
+        </g>
+        <g id="node-2bcd2c860acf4fa8b7f27d2f4a0639c9">
+          <rect x="-605" y="-58" width="170" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#CED4DA" stroke-width="1.5" />
+          <foreignObject x="-605" y="-58" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">MAC addressing</div>
+          </foreignObject>
+        </g>
+        <g id="node-6a51c9b27d264811843ecab1d0198256">
+          <rect x="-605" y="12" width="170" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#CED4DA" stroke-width="1.5" />
+          <foreignObject x="-605" y="12" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">Frame handling</div>
+          </foreignObject>
+        </g>
+        <g id="node-7dfab0193a0e4ca299a51c88402f9e72">
+          <rect x="-605" y="82" width="170" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#CED4DA" stroke-width="1.5" />
+          <foreignObject x="-605" y="82" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">Switches</div>
+          </foreignObject>
+        </g>
+        <g id="node-2c60efecbb2e4e27ad9c762d23e92504">
+          <rect x="-345" y="257" width="170" height="46" rx="10" ry="10" fill="#1098AD" stroke="#1098AD" stroke-width="1.5" />
+          <foreignObject x="-345" y="257" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #FFFFFF; text-align: left; justify-content: flex-start;">Physical Layer</div>
+          </foreignObject>
+        </g>
+        <g id="node-3513b6e31dfa4d15b319ecd85c7bcc8d">
+          <rect x="-605" y="152" width="170" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#CED4DA" stroke-width="1.5" />
+          <foreignObject x="-605" y="152" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">Cables</div>
+          </foreignObject>
+        </g>
+        <g id="node-7ac3fd30330d470baee74444634dbee9">
+          <rect x="-605" y="222" width="170" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#CED4DA" stroke-width="1.5" />
+          <foreignObject x="-605" y="222" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">Radio signals</div>
+          </foreignObject>
+        </g>
+        <g id="node-4f83bfbc1e624e2bbf5b618b8266eea1">
+          <rect x="-605" y="292" width="170" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#CED4DA" stroke-width="1.5" />
+          <foreignObject x="-605" y="292" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">Electrical signals</div>
+          </foreignObject>
+        </g>
+        <g id="node-251bc56fb6a24b0898344634315edf2d">
+          <rect x="-605" y="362" width="170" height="46" rx="10" ry="10" fill="#FFFFFF" stroke="#CED4DA" stroke-width="1.5" />
+          <foreignObject x="-605" y="362" width="170" height="46">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" style="color: #000000; text-align: left; justify-content: flex-start;">Hubs</div>
+          </foreignObject>
+        </g>
+      </svg>
+    </div>
+  </main>
+</body>
+</html>

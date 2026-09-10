@@ -10,6 +10,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using MindMap.Models;
+using MindMap.Services;
 
 namespace MindMap.Controls;
 
@@ -309,6 +310,13 @@ public sealed class MindMapEditor : Canvas
         }
 
         return bitmap;
+    }
+
+    public string ExportHtml(string title)
+    {
+        CommitEdit();
+        EnsureNodeHeights();
+        return MindMapHtmlExporter.Export(_doc, title);
     }
 
     /// <summary>

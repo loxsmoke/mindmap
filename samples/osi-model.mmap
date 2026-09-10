@@ -1,0 +1,547 @@
+{
+  "Version": 1,
+  "Nodes": [
+    {
+      "Id": "291b45deb0ab4fbf905e4a3a5a8018c7",
+      "X": -85,
+      "Y": -23,
+      "Width": 170,
+      "Height": 46,
+      "Text": "OSI Model",
+      "Color": "#4C6EF5",
+      "TextAlignment": "Left",
+      "CenterX": 0,
+      "CenterY": 0
+    },
+    {
+      "Id": "09f6fba580d34cbc862367b1a2c4937d",
+      "X": 175,
+      "Y": -373,
+      "Width": 170,
+      "Height": 46,
+      "Text": "Application Layer",
+      "Color": "#F03E3E",
+      "TextAlignment": "Left",
+      "CenterX": 260,
+      "CenterY": -350
+    },
+    {
+      "Id": "a131fb821a8043f19e9d25a8465fd124",
+      "X": 435,
+      "Y": -478,
+      "Width": 170,
+      "Height": 46,
+      "Text": "HTTP",
+      "Color": "#FFFFFF",
+      "TextAlignment": "Left",
+      "CenterX": 520,
+      "CenterY": -455
+    },
+    {
+      "Id": "21abf1349ed34f49a5e6a2bdd46220a3",
+      "X": 435,
+      "Y": -408,
+      "Width": 170,
+      "Height": 46,
+      "Text": "FTP",
+      "Color": "#FFFFFF",
+      "TextAlignment": "Left",
+      "CenterX": 520,
+      "CenterY": -385
+    },
+    {
+      "Id": "c33ca6a535df43cfa3eaff6f5e475919",
+      "X": 435,
+      "Y": -338,
+      "Width": 170,
+      "Height": 46,
+      "Text": "SMTP",
+      "Color": "#FFFFFF",
+      "TextAlignment": "Left",
+      "CenterX": 520,
+      "CenterY": -315
+    },
+    {
+      "Id": "16ec707f78494fafa0af48f26b6d5ad4",
+      "X": 435,
+      "Y": -268,
+      "Width": 170,
+      "Height": 46,
+      "Text": "DNS",
+      "Color": "#FFFFFF",
+      "TextAlignment": "Left",
+      "CenterX": 520,
+      "CenterY": -245
+    },
+    {
+      "Id": "61660455dc4b4275b17702124d9617d2",
+      "X": 175,
+      "Y": -128,
+      "Width": 170,
+      "Height": 46,
+      "Text": "Presentation Layer",
+      "Color": "#7048E8",
+      "TextAlignment": "Left",
+      "CenterX": 260,
+      "CenterY": -105
+    },
+    {
+      "Id": "1ca19e37040c4379a7957df1517b365d",
+      "X": 435,
+      "Y": -198,
+      "Width": 170,
+      "Height": 46,
+      "Text": "Data translation",
+      "Color": "#FFFFFF",
+      "TextAlignment": "Left",
+      "CenterX": 520,
+      "CenterY": -175
+    },
+    {
+      "Id": "de9e698886db4ca0a5e354f553c19140",
+      "X": 435,
+      "Y": -128,
+      "Width": 170,
+      "Height": 46,
+      "Text": "Encryption",
+      "Color": "#FFFFFF",
+      "TextAlignment": "Left",
+      "CenterX": 520,
+      "CenterY": -105
+    },
+    {
+      "Id": "212dbb6d4b7341fa8a9e74ef30f354ca",
+      "X": 435,
+      "Y": -58,
+      "Width": 170,
+      "Height": 46,
+      "Text": "Compression",
+      "Color": "#FFFFFF",
+      "TextAlignment": "Left",
+      "CenterX": 520,
+      "CenterY": -35
+    },
+    {
+      "Id": "4e227290ebe84ae8ada9b4367fb3ff0d",
+      "X": 175,
+      "Y": 82,
+      "Width": 170,
+      "Height": 46,
+      "Text": "Session Layer",
+      "Color": "#1098AD",
+      "TextAlignment": "Left",
+      "CenterX": 260,
+      "CenterY": 105
+    },
+    {
+      "Id": "7e08056bcda4486b9ac82a2c153fb931",
+      "X": 435,
+      "Y": 12,
+      "Width": 170,
+      "Height": 46,
+      "Text": "Session establishment",
+      "Color": "#FFFFFF",
+      "TextAlignment": "Left",
+      "CenterX": 520,
+      "CenterY": 35
+    },
+    {
+      "Id": "a30cf83805ad446e8152aeb624c38d8a",
+      "X": 435,
+      "Y": 82,
+      "Width": 170,
+      "Height": 46,
+      "Text": "Session management",
+      "Color": "#FFFFFF",
+      "TextAlignment": "Left",
+      "CenterX": 520,
+      "CenterY": 105
+    },
+    {
+      "Id": "2949d8348bc24c18b1e35a407050a443",
+      "X": 435,
+      "Y": 152,
+      "Width": 170,
+      "Height": 46,
+      "Text": "Session termination",
+      "Color": "#FFFFFF",
+      "TextAlignment": "Left",
+      "CenterX": 520,
+      "CenterY": 175
+    },
+    {
+      "Id": "f4cab87731734be4a5a696a40fdebba4",
+      "X": 175,
+      "Y": 327,
+      "Width": 170,
+      "Height": 46,
+      "Text": "Transport Layer",
+      "Color": "#E64980",
+      "TextAlignment": "Left",
+      "CenterX": 260,
+      "CenterY": 350
+    },
+    {
+      "Id": "ab231fd0aa5f4436911fcbc139652872",
+      "X": 435,
+      "Y": 222,
+      "Width": 170,
+      "Height": 46,
+      "Text": "TCP",
+      "Color": "#FFFFFF",
+      "TextAlignment": "Left",
+      "CenterX": 520,
+      "CenterY": 245
+    },
+    {
+      "Id": "9d1a1aa8e5e84a739a70bd1ffce0aa76",
+      "X": 435,
+      "Y": 292,
+      "Width": 170,
+      "Height": 46,
+      "Text": "UDP",
+      "Color": "#FFFFFF",
+      "TextAlignment": "Left",
+      "CenterX": 520,
+      "CenterY": 315
+    },
+    {
+      "Id": "715a237f0b834657ab7e81526414c496",
+      "X": 435,
+      "Y": 362,
+      "Width": 170,
+      "Height": 46,
+      "Text": "Segmentation",
+      "Color": "#FFFFFF",
+      "TextAlignment": "Left",
+      "CenterX": 520,
+      "CenterY": 385
+    },
+    {
+      "Id": "c8a4e309c5524a1091acae240b227718",
+      "X": 435,
+      "Y": 432,
+      "Width": 170,
+      "Height": 46,
+      "Text": "Flow control",
+      "Color": "#FFFFFF",
+      "TextAlignment": "Left",
+      "CenterX": 520,
+      "CenterY": 455
+    },
+    {
+      "Id": "19c9de3d867845e3ad5e17b799d2ae85",
+      "X": -345,
+      "Y": -303,
+      "Width": 170,
+      "Height": 46,
+      "Text": "Network Layer",
+      "Color": "#F59F00",
+      "TextAlignment": "Left",
+      "CenterX": -260,
+      "CenterY": -280
+    },
+    {
+      "Id": "5f448a2cedd0405491b527e676adaa82",
+      "X": -605,
+      "Y": -408,
+      "Width": 170,
+      "Height": 46,
+      "Text": "IP",
+      "Color": "#FFFFFF",
+      "TextAlignment": "Left",
+      "CenterX": -520,
+      "CenterY": -385
+    },
+    {
+      "Id": "63d22001868747acb42e60c8c55fd120",
+      "X": -605,
+      "Y": -338,
+      "Width": 170,
+      "Height": 46,
+      "Text": "Routing",
+      "Color": "#FFFFFF",
+      "TextAlignment": "Left",
+      "CenterX": -520,
+      "CenterY": -315
+    },
+    {
+      "Id": "a08be5e739ab48e38c678173f51a0334",
+      "X": -605,
+      "Y": -268,
+      "Width": 170,
+      "Height": 46,
+      "Text": "Packet forwarding",
+      "Color": "#FFFFFF",
+      "TextAlignment": "Left",
+      "CenterX": -520,
+      "CenterY": -245
+    },
+    {
+      "Id": "5bb60cd4ef3b411c98ee27cd0303f37c",
+      "X": -605,
+      "Y": -198,
+      "Width": 170,
+      "Height": 46,
+      "Text": "Routers",
+      "Color": "#FFFFFF",
+      "TextAlignment": "Left",
+      "CenterX": -520,
+      "CenterY": -175
+    },
+    {
+      "Id": "6e57c51c1e5844b68f59ad74ffae8a2e",
+      "X": -345,
+      "Y": -23,
+      "Width": 170,
+      "Height": 46,
+      "Text": "Data Link Layer",
+      "Color": "#37B24D",
+      "TextAlignment": "Left",
+      "CenterX": -260,
+      "CenterY": 0
+    },
+    {
+      "Id": "3ecb33f824a040bf99ea6aaba8d6f8e2",
+      "X": -605,
+      "Y": -128,
+      "Width": 170,
+      "Height": 46,
+      "Text": "Ethernet",
+      "Color": "#FFFFFF",
+      "TextAlignment": "Left",
+      "CenterX": -520,
+      "CenterY": -105
+    },
+    {
+      "Id": "2bcd2c860acf4fa8b7f27d2f4a0639c9",
+      "X": -605,
+      "Y": -58,
+      "Width": 170,
+      "Height": 46,
+      "Text": "MAC addressing",
+      "Color": "#FFFFFF",
+      "TextAlignment": "Left",
+      "CenterX": -520,
+      "CenterY": -35
+    },
+    {
+      "Id": "6a51c9b27d264811843ecab1d0198256",
+      "X": -605,
+      "Y": 12,
+      "Width": 170,
+      "Height": 46,
+      "Text": "Frame handling",
+      "Color": "#FFFFFF",
+      "TextAlignment": "Left",
+      "CenterX": -520,
+      "CenterY": 35
+    },
+    {
+      "Id": "7dfab0193a0e4ca299a51c88402f9e72",
+      "X": -605,
+      "Y": 82,
+      "Width": 170,
+      "Height": 46,
+      "Text": "Switches",
+      "Color": "#FFFFFF",
+      "TextAlignment": "Left",
+      "CenterX": -520,
+      "CenterY": 105
+    },
+    {
+      "Id": "2c60efecbb2e4e27ad9c762d23e92504",
+      "X": -345,
+      "Y": 257,
+      "Width": 170,
+      "Height": 46,
+      "Text": "Physical Layer",
+      "Color": "#1098AD",
+      "TextAlignment": "Left",
+      "CenterX": -260,
+      "CenterY": 280
+    },
+    {
+      "Id": "3513b6e31dfa4d15b319ecd85c7bcc8d",
+      "X": -605,
+      "Y": 152,
+      "Width": 170,
+      "Height": 46,
+      "Text": "Cables",
+      "Color": "#FFFFFF",
+      "TextAlignment": "Left",
+      "CenterX": -520,
+      "CenterY": 175
+    },
+    {
+      "Id": "7ac3fd30330d470baee74444634dbee9",
+      "X": -605,
+      "Y": 222,
+      "Width": 170,
+      "Height": 46,
+      "Text": "Radio signals",
+      "Color": "#FFFFFF",
+      "TextAlignment": "Left",
+      "CenterX": -520,
+      "CenterY": 245
+    },
+    {
+      "Id": "4f83bfbc1e624e2bbf5b618b8266eea1",
+      "X": -605,
+      "Y": 292,
+      "Width": 170,
+      "Height": 46,
+      "Text": "Electrical signals",
+      "Color": "#FFFFFF",
+      "TextAlignment": "Left",
+      "CenterX": -520,
+      "CenterY": 315
+    },
+    {
+      "Id": "251bc56fb6a24b0898344634315edf2d",
+      "X": -605,
+      "Y": 362,
+      "Width": 170,
+      "Height": 46,
+      "Text": "Hubs",
+      "Color": "#FFFFFF",
+      "TextAlignment": "Left",
+      "CenterX": -520,
+      "CenterY": 385
+    }
+  ],
+  "Connections": [
+    {
+      "FromId": "291b45deb0ab4fbf905e4a3a5a8018c7",
+      "ToId": "09f6fba580d34cbc862367b1a2c4937d"
+    },
+    {
+      "FromId": "291b45deb0ab4fbf905e4a3a5a8018c7",
+      "ToId": "61660455dc4b4275b17702124d9617d2"
+    },
+    {
+      "FromId": "291b45deb0ab4fbf905e4a3a5a8018c7",
+      "ToId": "4e227290ebe84ae8ada9b4367fb3ff0d"
+    },
+    {
+      "FromId": "291b45deb0ab4fbf905e4a3a5a8018c7",
+      "ToId": "f4cab87731734be4a5a696a40fdebba4"
+    },
+    {
+      "FromId": "291b45deb0ab4fbf905e4a3a5a8018c7",
+      "ToId": "19c9de3d867845e3ad5e17b799d2ae85"
+    },
+    {
+      "FromId": "291b45deb0ab4fbf905e4a3a5a8018c7",
+      "ToId": "6e57c51c1e5844b68f59ad74ffae8a2e"
+    },
+    {
+      "FromId": "291b45deb0ab4fbf905e4a3a5a8018c7",
+      "ToId": "2c60efecbb2e4e27ad9c762d23e92504"
+    },
+    {
+      "FromId": "09f6fba580d34cbc862367b1a2c4937d",
+      "ToId": "a131fb821a8043f19e9d25a8465fd124"
+    },
+    {
+      "FromId": "09f6fba580d34cbc862367b1a2c4937d",
+      "ToId": "21abf1349ed34f49a5e6a2bdd46220a3"
+    },
+    {
+      "FromId": "09f6fba580d34cbc862367b1a2c4937d",
+      "ToId": "c33ca6a535df43cfa3eaff6f5e475919"
+    },
+    {
+      "FromId": "09f6fba580d34cbc862367b1a2c4937d",
+      "ToId": "16ec707f78494fafa0af48f26b6d5ad4"
+    },
+    {
+      "FromId": "61660455dc4b4275b17702124d9617d2",
+      "ToId": "1ca19e37040c4379a7957df1517b365d"
+    },
+    {
+      "FromId": "61660455dc4b4275b17702124d9617d2",
+      "ToId": "de9e698886db4ca0a5e354f553c19140"
+    },
+    {
+      "FromId": "61660455dc4b4275b17702124d9617d2",
+      "ToId": "212dbb6d4b7341fa8a9e74ef30f354ca"
+    },
+    {
+      "FromId": "4e227290ebe84ae8ada9b4367fb3ff0d",
+      "ToId": "7e08056bcda4486b9ac82a2c153fb931"
+    },
+    {
+      "FromId": "4e227290ebe84ae8ada9b4367fb3ff0d",
+      "ToId": "a30cf83805ad446e8152aeb624c38d8a"
+    },
+    {
+      "FromId": "4e227290ebe84ae8ada9b4367fb3ff0d",
+      "ToId": "2949d8348bc24c18b1e35a407050a443"
+    },
+    {
+      "FromId": "f4cab87731734be4a5a696a40fdebba4",
+      "ToId": "ab231fd0aa5f4436911fcbc139652872"
+    },
+    {
+      "FromId": "f4cab87731734be4a5a696a40fdebba4",
+      "ToId": "9d1a1aa8e5e84a739a70bd1ffce0aa76"
+    },
+    {
+      "FromId": "f4cab87731734be4a5a696a40fdebba4",
+      "ToId": "715a237f0b834657ab7e81526414c496"
+    },
+    {
+      "FromId": "f4cab87731734be4a5a696a40fdebba4",
+      "ToId": "c8a4e309c5524a1091acae240b227718"
+    },
+    {
+      "FromId": "19c9de3d867845e3ad5e17b799d2ae85",
+      "ToId": "5f448a2cedd0405491b527e676adaa82"
+    },
+    {
+      "FromId": "19c9de3d867845e3ad5e17b799d2ae85",
+      "ToId": "63d22001868747acb42e60c8c55fd120"
+    },
+    {
+      "FromId": "19c9de3d867845e3ad5e17b799d2ae85",
+      "ToId": "a08be5e739ab48e38c678173f51a0334"
+    },
+    {
+      "FromId": "19c9de3d867845e3ad5e17b799d2ae85",
+      "ToId": "5bb60cd4ef3b411c98ee27cd0303f37c"
+    },
+    {
+      "FromId": "6e57c51c1e5844b68f59ad74ffae8a2e",
+      "ToId": "3ecb33f824a040bf99ea6aaba8d6f8e2"
+    },
+    {
+      "FromId": "6e57c51c1e5844b68f59ad74ffae8a2e",
+      "ToId": "2bcd2c860acf4fa8b7f27d2f4a0639c9"
+    },
+    {
+      "FromId": "6e57c51c1e5844b68f59ad74ffae8a2e",
+      "ToId": "6a51c9b27d264811843ecab1d0198256"
+    },
+    {
+      "FromId": "6e57c51c1e5844b68f59ad74ffae8a2e",
+      "ToId": "7dfab0193a0e4ca299a51c88402f9e72"
+    },
+    {
+      "FromId": "2c60efecbb2e4e27ad9c762d23e92504",
+      "ToId": "3513b6e31dfa4d15b319ecd85c7bcc8d"
+    },
+    {
+      "FromId": "2c60efecbb2e4e27ad9c762d23e92504",
+      "ToId": "7ac3fd30330d470baee74444634dbee9"
+    },
+    {
+      "FromId": "2c60efecbb2e4e27ad9c762d23e92504",
+      "ToId": "4f83bfbc1e624e2bbf5b618b8266eea1"
+    },
+    {
+      "FromId": "2c60efecbb2e4e27ad9c762d23e92504",
+      "ToId": "251bc56fb6a24b0898344634315edf2d"
+    }
+  ]
+}
