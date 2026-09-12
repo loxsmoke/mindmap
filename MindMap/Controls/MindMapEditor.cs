@@ -9,6 +9,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.Styling;
 using MindMap.Models;
 using MindMap.Services;
 
@@ -76,12 +77,14 @@ public sealed class MindMapEditor : Canvas
     private const double ChildVerticalGap = 24;
     private const double ReparentOverlapThreshold = 0.20;
     #region Colors
-    private static Color CanvasBackgroundColor { get; } = Color.Parse("#F5F6F8");
-    private static Color EditorBorderColor { get; } = Color.Parse("#1C1E21");
-    private static Color GridDotColor { get; } = Color.Parse("#D7DBE0");
-    private static Color ConnectionFallbackColor { get; } = Color.Parse("#98A2B3");
-    private static Color LightNodeBorderColor { get; } = Color.Parse("#CED4DA");
-    private static Color HudTextColor { get; } = Color.Parse("#8A94A6");
+    private Color CanvasBackgroundColor => IsDarkTheme ? Color.Parse("#101318") : Color.Parse("#F5F6F8");
+    private Color EditorBorderColor => IsDarkTheme ? Color.Parse("#D0D5DD") : Color.Parse("#1C1E21");
+    private Color EditorBackgroundColor => IsDarkTheme ? Color.Parse("#171A1F") : Colors.White;
+    private Color EditorTextColor => IsDarkTheme ? Color.Parse("#F2F4F7") : Color.Parse("#1C1E21");
+    private Color GridDotColor => IsDarkTheme ? Color.Parse("#2B3038") : Color.Parse("#D7DBE0");
+    private Color ConnectionFallbackColor => IsDarkTheme ? Color.Parse("#667085") : Color.Parse("#98A2B3");
+    private Color LightNodeBorderColor => IsDarkTheme ? Color.Parse("#8A94A6") : Color.Parse("#CED4DA");
+    private Color HudTextColor => IsDarkTheme ? Color.Parse("#98A2B3") : Color.Parse("#8A94A6");
     internal static Color PrimaryBranchColor { get; } = Color.Parse("#4C6EF5");
     internal static Color DangerBranchColor { get; } = Color.Parse("#F03E3E");
     private static Color WarningBranchColor { get; } = Color.Parse("#F59F00");
@@ -92,6 +95,7 @@ public sealed class MindMapEditor : Canvas
     private static Color OrangeBranchColor { get; } = Color.Parse("#F76707");
     #endregion
     private TextAlignment _currentTextAlignment = TextAlignment.Left;
+    private bool IsDarkTheme => ActualThemeVariant == ThemeVariant.Dark;
 
     public event EventHandler? DocumentChanged;
     public event EventHandler? SelectionChanged;
@@ -175,7 +179,6 @@ public sealed class MindMapEditor : Canvas
     public MindMapEditor()
     {
         Focusable = true;
-        Background = new SolidColorBrush(CanvasBackgroundColor);
         ClipToBounds = true;
 
         _layer = new DrawLayer(this) { IsHitTestVisible = false };
@@ -190,15 +193,24 @@ public sealed class MindMapEditor : Canvas
             IsVisible = false,
             Padding = new Thickness(6, 4),
             BorderThickness = new Thickness(2),
-            BorderBrush = new SolidColorBrush(EditorBorderColor),
-            Background = Brushes.White,
             VerticalContentAlignment = Avalonia.Layout.VerticalAlignment.Center,
         };
+        ApplyTheme();
+        ActualThemeVariantChanged += (_, _) => ApplyTheme();
         _editor.LostFocus += (_, _) => { if (!_transitioning) CommitEdit(); };
         // Tunnel: intercept Enter/Tab BEFORE the TextBox consumes them (AcceptsReturn=true
         // otherwise eats Enter as a newline). Shift+Enter is left alone to become a newline.
         _editor.AddHandler(KeyDownEvent, EditorKeyDown, RoutingStrategies.Tunnel);
         Children.Add(_editor);
+    }
+
+    private void ApplyTheme()
+    {
+        Background = new SolidColorBrush(CanvasBackgroundColor);
+        _editor.BorderBrush = new SolidColorBrush(EditorBorderColor);
+        _editor.Background = new SolidColorBrush(EditorBackgroundColor);
+        _editor.Foreground = new SolidColorBrush(EditorTextColor);
+        _layer?.InvalidateVisual();
     }
 
     // ---------------------------------------------------------------- Public API

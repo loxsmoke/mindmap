@@ -7,4 +7,59 @@
     <Application.Styles>
         <FluentTheme />
     </Application.Styles>
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="ShellBackgroundBrush" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="ShellBorderBrush" Color="#E4E7EC" />
+                    <SolidColorBrush x:Key="PrimaryTextBrush" Color="#1C1E21" />
+                    <SolidColorBrush x:Key="MutedTextBrush" Color="#667085" />
+                    <SolidColorBrush x:Key="SeparatorBrush" Color="#D7DBE0" />
+                    <SolidColorBrush x:Key="ToolbarButtonBackgroundBrush" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="ToolbarButtonForegroundBrush" Color="#1C1E21" />
+                    <SolidColorBrush x:Key="ToolbarButtonBorderBrush" Color="#D0D5DD" />
+                    <SolidColorBrush x:Key="ToolbarButtonHoverBackgroundBrush" Color="#F2F4F7" />
+                    <SolidColorBrush x:Key="ToolbarButtonHoverBorderBrush" Color="#98A2B3" />
+                    <SolidColorBrush x:Key="ToolbarButtonPressedBackgroundBrush" Color="#E4E7EC" />
+                    <SolidColorBrush x:Key="ToolbarButtonPressedBorderBrush" Color="#667085" />
+                    <SolidColorBrush x:Key="AlignmentButtonSurfaceBrush" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="AlignmentButtonSelectedBorderBrush" Color="#1C1E21" />
+                    <SolidColorBrush x:Key="UpdateBannerBackgroundBrush" Color="#FFF8E1" />
+                    <SolidColorBrush x:Key="UpdateBannerBorderBrush" Color="#F0C36D" />
+                    <SolidColorBrush x:Key="UpdateBannerButtonBackgroundBrush" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="UpdateBannerButtonHoverBackgroundBrush" Color="#FEF0C7" />
+                    <SolidColorBrush x:Key="UpdateBannerButtonPressedBackgroundBrush" Color="#FEDF89" />
+                    <SolidColorBrush x:Key="UpdateBannerButtonBorderBrush" Color="#D0A640" />
+                    <SolidColorBrush x:Key="UpdateBannerButtonHoverBorderBrush" Color="#B54708" />
+                    <SolidColorBrush x:Key="UpdateBannerButtonPressedBorderBrush" Color="#93370D" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="ShellBackgroundBrush" Color="#171A1F" />
+                    <SolidColorBrush x:Key="ShellBorderBrush" Color="#2B3038" />
+                    <SolidColorBrush x:Key="PrimaryTextBrush" Color="#F2F4F7" />
+                    <SolidColorBrush x:Key="MutedTextBrush" Color="#AAB2C0" />
+                    <SolidColorBrush x:Key="SeparatorBrush" Color="#3A404A" />
+                    <SolidColorBrush x:Key="ToolbarButtonBackgroundBrush" Color="#242932" />
+                    <SolidColorBrush x:Key="ToolbarButtonForegroundBrush" Color="#F2F4F7" />
+                    <SolidColorBrush x:Key="ToolbarButtonBorderBrush" Color="#404752" />
+                    <SolidColorBrush x:Key="ToolbarButtonHoverBackgroundBrush" Color="#303742" />
+                    <SolidColorBrush x:Key="ToolbarButtonHoverBorderBrush" Color="#667085" />
+                    <SolidColorBrush x:Key="ToolbarButtonPressedBackgroundBrush" Color="#3A414D" />
+                    <SolidColorBrush x:Key="ToolbarButtonPressedBorderBrush" Color="#8A94A6" />
+                    <SolidColorBrush x:Key="AlignmentButtonSurfaceBrush" Color="#20252D" />
+                    <SolidColorBrush x:Key="AlignmentButtonSelectedBorderBrush" Color="#F2F4F7" />
+                    <SolidColorBrush x:Key="UpdateBannerBackgroundBrush" Color="#4A3412" />
+                    <SolidColorBrush x:Key="UpdateBannerBorderBrush" Color="#B7791F" />
+                    <SolidColorBrush x:Key="UpdateBannerButtonBackgroundBrush" Color="#33230D" />
+                    <SolidColorBrush x:Key="UpdateBannerButtonHoverBackgroundBrush" Color="#5A3C12" />
+                    <SolidColorBrush x:Key="UpdateBannerButtonPressedBackgroundBrush" Color="#704B16" />
+                    <SolidColorBrush x:Key="UpdateBannerButtonBorderBrush" Color="#B7791F" />
+                    <SolidColorBrush x:Key="UpdateBannerButtonHoverBorderBrush" Color="#D69E2E" />
+                    <SolidColorBrush x:Key="UpdateBannerButtonPressedBorderBrush" Color="#F6C35B" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
 </Application>

@@ -14,6 +14,7 @@ using Avalonia.Input.Platform;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using Avalonia.Styling;
 using MindMap.Controls;
 using MindMap.Services;
 using SkiaSharp;
@@ -148,10 +149,12 @@ public partial class MainWindow : Window
         BuildSwatches();
         BuildTextAlignmentButtons();
         SetWindowTitle();
+        ApplyTheme();
 
         _editor.ZoomChanged += (_, _) => _zoomLabel.Text = $"{_editor.ZoomPercent:0}%";
         _editor.DocumentChanged += (_, _) => OnEditorDocumentChanged();
         _editor.SelectionChanged += (_, _) => UpdateTextAlignmentButtons();
+        ActualThemeVariantChanged += (_, _) => ApplyTheme();
         Closing += OnClosing;
 
         Opened += async (_, _) =>
@@ -176,12 +179,14 @@ public partial class MainWindow : Window
                 Height = 22,
                 Margin = new Avalonia.Thickness(2, 0),
                 CornerRadius = new Avalonia.CornerRadius(11),
-                Background = new SolidColorBrush(Color.Parse(hex)),
-                BorderBrush = new SolidColorBrush(TranslucentBorderColor),
-                BorderThickness = new Avalonia.Thickness(1),
+                Background = Brushes.Transparent,
+                BorderBrush = Brushes.Transparent,
+                BorderThickness = new Avalonia.Thickness(0),
                 Padding = new Avalonia.Thickness(0),
                 VerticalAlignment = VerticalAlignment.Center,
+                Content = new ColorSwatch(hex),
             };
+            btn.Classes.Add("swatch");
             var captured = hex;
             btn.Click += (_, _) =>
             {
@@ -209,13 +214,21 @@ public partial class MainWindow : Window
             Height = 26,
             Margin = new Avalonia.Thickness(2, 0),
             CornerRadius = new Avalonia.CornerRadius(4),
-            Background = Brushes.White,
-            BorderBrush = new SolidColorBrush(ControlBorderColor),
+            Background = Brushes.Transparent,
+            BorderBrush = new SolidColorBrush(ThemeColors().ControlBorder),
             BorderThickness = new Avalonia.Thickness(1),
             Padding = new Avalonia.Thickness(0),
             VerticalAlignment = VerticalAlignment.Center,
-            Content = new TextAlignmentIcon(alignment),
+            Content = new Border
+            {
+                Width = 22,
+                Height = 20,
+                Background = new SolidColorBrush(ThemeColors().AlignmentSurface),
+                CornerRadius = new Avalonia.CornerRadius(3),
+                Child = new TextAlignmentIcon(alignment),
+            },
         };
+        btn.Classes.Add("alignment");
         ToolTip.SetTip(btn, tooltip);
         btn.Click += (_, _) =>
         {
@@ -229,15 +242,40 @@ public partial class MainWindow : Window
 
     private void UpdateTextAlignmentButtons()
     {
+        var colors = ThemeColors();
         foreach (var (alignment, button) in _alignmentButtons)
         {
             var selected = _editor.CurrentTextAlignment == alignment;
             button.BorderBrush = selected
-                ? Brushes.Black
-                : new SolidColorBrush(ControlBorderColor);
+                ? new SolidColorBrush(colors.SelectedBorder)
+                : new SolidColorBrush(colors.ControlBorder);
             button.BorderThickness = new Avalonia.Thickness(selected ? 3 : 1);
+            if (button.Content is Border surface)
+                surface.Background = new SolidColorBrush(colors.AlignmentSurface);
         }
     }
+
+    private void ApplyTheme()
+    {
+        UpdateTextAlignmentButtons();
+    }
+
+    private ThemePalette ThemeColors() => IsDarkTheme
+        ? new ThemePalette(
+            ControlBorder: Color.Parse("#404752"),
+            SelectedBorder: Color.Parse("#F2F4F7"),
+            AlignmentSurface: Color.Parse("#20252D"))
+        : new ThemePalette(
+            ControlBorder: Color.Parse("#D0D5DD"),
+            SelectedBorder: Color.Parse("#1C1E21"),
+            AlignmentSurface: Colors.White);
+
+    private bool IsDarkTheme => ActualThemeVariant == ThemeVariant.Dark;
+
+    private readonly record struct ThemePalette(
+        Color ControlBorder,
+        Color SelectedBorder,
+        Color AlignmentSurface);
 
     private void LoadRecentFiles()
     {
@@ -1391,6 +1429,32 @@ public partial class MainWindow : Window
 
     internal static string FormatDisplayVersion(Version? version) => version?.ToString(3) ?? "0.1.0";
 
+    private sealed class ColorSwatch : Control
+    {
+        private readonly Color _color;
+
+        public ColorSwatch(string hex)
+        {
+            _color = Color.Parse(hex);
+            Width = 18;
+            Height = 18;
+            IsHitTestVisible = false;
+        }
+
+        public override void Render(DrawingContext context)
+        {
+            base.Render(context);
+            var radius = Math.Max(0, Math.Min(Bounds.Width, Bounds.Height) / 2 - 0.5);
+            var center = new Avalonia.Point(Bounds.Width / 2, Bounds.Height / 2);
+            context.DrawEllipse(
+                new SolidColorBrush(_color),
+                new Pen(new SolidColorBrush(TranslucentBorderColor), 1),
+                center,
+                radius,
+                radius);
+        }
+    }
+
     private sealed class TextAlignmentIcon : Control
     {
         private readonly TextAlignment _alignment;
@@ -1401,12 +1465,16 @@ public partial class MainWindow : Window
             Width = 18;
             Height = 16;
             IsHitTestVisible = false;
+            ActualThemeVariantChanged += (_, _) => InvalidateVisual();
         }
 
         public override void Render(DrawingContext context)
         {
             base.Render(context);
-            var pen = new Pen(new SolidColorBrush(IconStrokeColor), 2)
+            var stroke = ActualThemeVariant == ThemeVariant.Dark
+                ? Color.Parse("#F2F4F7")
+                : IconStrokeColor;
+            var pen = new Pen(new SolidColorBrush(stroke), 2)
             {
                 LineCap = PenLineCap.Round,
             };

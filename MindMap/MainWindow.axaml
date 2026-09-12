@@ -12,21 +12,73 @@
 
     <Window.Styles>
         <Style Selector="Button.tool">
+            <Setter Property="Background" Value="{DynamicResource ToolbarButtonBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource ToolbarButtonForegroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ToolbarButtonBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Padding" Value="12,6" />
             <Setter Property="Margin" Value="2,0" />
             <Setter Property="CornerRadius" Value="6" />
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
+        <Style Selector="Button.tool:pointerover">
+            <Setter Property="Background" Value="{DynamicResource ToolbarButtonHoverBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource ToolbarButtonForegroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ToolbarButtonHoverBorderBrush}" />
+        </Style>
+        <Style Selector="Button.tool:pressed">
+            <Setter Property="Background" Value="{DynamicResource ToolbarButtonPressedBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource ToolbarButtonForegroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ToolbarButtonPressedBorderBrush}" />
+        </Style>
+        <Style Selector="Button.swatch">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+        <Style Selector="Button.swatch:pointerover">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+        <Style Selector="Button.swatch:pressed">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+        <Style Selector="Button.alignment">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="Button.alignment:pointerover">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="Button.alignment:pressed">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="Button.banner">
+            <Setter Property="Background" Value="{DynamicResource UpdateBannerButtonBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource UpdateBannerButtonBorderBrush}" />
+        </Style>
+        <Style Selector="Button.banner:pointerover">
+            <Setter Property="Background" Value="{DynamicResource UpdateBannerButtonHoverBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource UpdateBannerButtonHoverBorderBrush}" />
+        </Style>
+        <Style Selector="Button.banner:pressed">
+            <Setter Property="Background" Value="{DynamicResource UpdateBannerButtonPressedBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource UpdateBannerButtonPressedBorderBrush}" />
+        </Style>
         <Style Selector="Border.sep">
             <Setter Property="Width" Value="1" />
             <Setter Property="Margin" Value="8,6" />
-            <Setter Property="Background" Value="#D7DBE0" />
+            <Setter Property="Background" Value="{DynamicResource SeparatorBrush}" />
         </Style>
     </Window.Styles>
 
     <DockPanel>
         <!-- Toolbar -->
-        <Border DockPanel.Dock="Top" Background="#FFFFFF" BorderBrush="#E4E7EC"
+        <Border DockPanel.Dock="Top"
+                Background="{DynamicResource ShellBackgroundBrush}"
+                BorderBrush="{DynamicResource ShellBorderBrush}"
                 BorderThickness="0,0,0,1" Padding="10,8">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                 <Menu VerticalAlignment="Center">
@@ -53,25 +105,33 @@
                 </Menu>
                 <Border Classes="sep" />
                 <TextBlock Text="Color" VerticalAlignment="Center"
-                           Margin="4,0,6,0" Foreground="#667085" />
+                           Margin="4,0,6,0" Foreground="{DynamicResource MutedTextBrush}" />
                 <StackPanel Name="Swatches" Orientation="Horizontal" VerticalAlignment="Center" />
                 <StackPanel Name="TextAlignmentButtons" Orientation="Horizontal" VerticalAlignment="Center"
                             Margin="8,0,0,0" />
                 <Border Classes="sep" />
-                <Button Classes="tool" Name="LayoutBtn" Content="Layout"
-                        ToolTip.Tip="Rebuild the mind map layout" />
+                <Button Classes="tool" Name="LayoutBtn" ToolTip.Tip="Rebuild the mind map layout">
+                    <TextBlock Text="Layout" Foreground="{DynamicResource ToolbarButtonForegroundBrush}" />
+                </Button>
                 <Border Classes="sep" />
-                <Button Classes="tool" Name="ZoomOutBtn" Content="−" Width="34" />
+                <Button Classes="tool" Name="ZoomOutBtn" Width="34">
+                    <TextBlock Text="−" Foreground="{DynamicResource ToolbarButtonForegroundBrush}" />
+                </Button>
                 <TextBlock Name="ZoomLabel" Text="100%" VerticalAlignment="Center"
-                           Width="52" TextAlignment="Center" Foreground="#344054" />
-                <Button Classes="tool" Name="ZoomInBtn" Content="+" Width="34" />
-                <Button Classes="tool" Name="FitBtn" Content="Fit" />
+                           Width="52" TextAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" />
+                <Button Classes="tool" Name="ZoomInBtn" Width="34">
+                    <TextBlock Text="+" Foreground="{DynamicResource ToolbarButtonForegroundBrush}" />
+                </Button>
+                <Button Classes="tool" Name="FitBtn">
+                    <TextBlock Text="Fit" Foreground="{DynamicResource ToolbarButtonForegroundBrush}" />
+                </Button>
             </StackPanel>
         </Border>
 
         <!-- Update notification -->
         <Border Name="UpdateBanner" DockPanel.Dock="Top"
-                Background="#FFF8E1" BorderBrush="#F0C36D"
+                Background="{DynamicResource UpdateBannerBackgroundBrush}"
+                BorderBrush="{DynamicResource UpdateBannerBorderBrush}"
                 BorderThickness="0,0,0,1" Padding="10,8"
                 IsVisible="False">
             <StackPanel Spacing="8">
@@ -79,21 +139,30 @@
                     <TextBlock Name="UpdateBannerText" Grid.Column="0"
                                VerticalAlignment="Center"
                                FontWeight="SemiBold"
+                               Foreground="{DynamicResource PrimaryTextBrush}"
                                TextTrimming="CharacterEllipsis" />
-                    <Button Name="InstallUpdateBtn" Grid.Column="1"
-                            Content="Install" MinWidth="70"
+                    <Button Classes="banner" Name="InstallUpdateBtn" Grid.Column="1"
+                            MinWidth="70"
                             IsVisible="False"
-                            Margin="8,0,0,0" />
-                    <Button Name="DownloadUpdateBtn" Grid.Column="2"
-                            Content="Download" MinWidth="84"
+                            Margin="8,0,0,0">
+                        <TextBlock Text="Install" Foreground="{DynamicResource PrimaryTextBrush}" />
+                    </Button>
+                    <Button Classes="banner" Name="DownloadUpdateBtn" Grid.Column="2"
+                            MinWidth="84"
                             IsVisible="False"
-                            Margin="8,0,0,0" />
-                    <Button Name="ViewUpdateBtn" Grid.Column="3"
-                            Content="View" MinWidth="60"
-                            Margin="8,0,0,0" />
-                    <Button Name="DismissUpdateBtn" Grid.Column="4"
-                            Content="X" Width="28"
-                            Margin="4,0,0,0" />
+                            Margin="8,0,0,0">
+                        <TextBlock Text="Download" Foreground="{DynamicResource PrimaryTextBrush}" />
+                    </Button>
+                    <Button Classes="banner" Name="ViewUpdateBtn" Grid.Column="3"
+                            MinWidth="60"
+                            Margin="8,0,0,0">
+                        <TextBlock Text="View" Foreground="{DynamicResource PrimaryTextBrush}" />
+                    </Button>
+                    <Button Classes="banner" Name="DismissUpdateBtn" Grid.Column="4"
+                            Width="28"
+                            Margin="4,0,0,0">
+                        <TextBlock Text="X" Foreground="{DynamicResource PrimaryTextBrush}" />
+                    </Button>
                 </Grid>
                 <ProgressBar Name="UpdateProgressBar"
                              Minimum="0" Maximum="1"
@@ -103,9 +172,11 @@
         </Border>
 
         <!-- Status bar -->
-        <Border DockPanel.Dock="Bottom" Background="#FFFFFF" BorderBrush="#E4E7EC"
+        <Border DockPanel.Dock="Bottom"
+                Background="{DynamicResource ShellBackgroundBrush}"
+                BorderBrush="{DynamicResource ShellBorderBrush}"
                 BorderThickness="0,1,0,0" Padding="10,4">
-            <TextBlock Name="StatusLabel" Foreground="#667085"
+            <TextBlock Name="StatusLabel" Foreground="{DynamicResource MutedTextBrush}"
                        Text="Ready" VerticalAlignment="Center" />
         </Border>
 
