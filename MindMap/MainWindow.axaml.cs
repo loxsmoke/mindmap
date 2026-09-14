@@ -133,12 +133,19 @@ public partial class MainWindow : Window
         this.FindControl<MenuItem>("DeleteMenuItem")!.Click += (_, _) => { _editor.DeleteSelection(); _editor.Focus(); };
         this.FindControl<MenuItem>("CopyOutlineMenuItem")!.Click += async (_, _) => await CopyOutline();
         this.FindControl<MenuItem>("PasteOutlineMenuItem")!.Click += async (_, _) => await PasteOutline();
-        this.FindControl<Button>("LayoutBtn")!.Click += (_, _) => { _editor.RebuildLayout(); _editor.Focus(); };
+        this.FindControl<MenuItem>("RebuildMenuItem")!.Click += (_, _) => { _editor.RebuildLayout(); _editor.Focus(); };
+        this.FindControl<MenuItem>("FitMenuItem")!.Click += (_, _) => { _editor.ZoomToFit(); _editor.Focus(); };
+        this.FindControl<MenuItem>("FlatMenuItem")!.Click += (_, _) => _editor.SetThreeDView(false);
+        this.FindControl<MenuItem>("ThreeDMenuItem")!.Click += (_, _) => _editor.SetThreeDView(true);
+        _editor.ViewChanged += (_, _) =>
+        {
+            this.FindControl<MenuItem>("FlatMenuItem")!.IsChecked = !_editor.IsThreeDView;
+            this.FindControl<MenuItem>("ThreeDMenuItem")!.IsChecked = _editor.IsThreeDView;
+        };
         _editor.CopyRequested += async (_, _) => await CopyOutline();
         _editor.PasteRequested += async (_, _) => await PasteOutline();
         this.FindControl<Button>("ZoomInBtn")!.Click += (_, _) => _editor.ZoomIn();
         this.FindControl<Button>("ZoomOutBtn")!.Click += (_, _) => _editor.ZoomOut();
-        this.FindControl<Button>("FitBtn")!.Click += (_, _) => _editor.ZoomToFit();
         _installUpdateBtn.Click += async (_, _) => await InstallUpdateAsync();
         _downloadUpdateBtn.Click += async (_, _) => await DownloadUpdateAsync();
         _viewUpdateBtn.Click += (_, _) => ViewReleaseOnGitHub();

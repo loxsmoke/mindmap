@@ -33,7 +33,7 @@ namespace MindMap.Controls;
 ///   • Ctrl+click                -> toggle selection; drag on empty space -> marquee select
 ///   • Right/Middle/Space+drag   -> pan;  wheel -> pan (Shift: horizontal, Ctrl: zoom)
 /// </summary>
-public sealed class MindMapEditor : Canvas
+public sealed partial class MindMapEditor : Canvas
 {
     private enum DragMode { None, Panning, MovingNodes, Marquee, Connecting }
 
@@ -480,6 +480,7 @@ public sealed class MindMapEditor : Canvas
 
     public void ZoomToFit()
     {
+        if (_threeDView) { FitThreeDView(); return; }
         if (_doc.IsEmpty || Bounds.Width < 10 || Bounds.Height < 10)
         {
             _zoom = 1; _panX = 0; _panY = 0;
@@ -562,6 +563,15 @@ public sealed class MindMapEditor : Canvas
         Focus();
         var props = e.GetCurrentPoint(this).Properties;
         var screen = e.GetPosition(this);
+        if (_threeDView)
+        {
+            _pressScreen = screen;
+            _orbiting = props.IsLeftButtonPressed;
+            _mode = _orbiting ? DragMode.None : DragMode.Panning;
+            e.Pointer.Capture(this);
+            e.Handled = true;
+            return;
+        }
         var world = ToWorld(screen);
         _pressScreen = screen;
         _pressWorld = world;
@@ -655,6 +665,16 @@ public sealed class MindMapEditor : Canvas
     {
         base.OnPointerMoved(e);
         var screen = e.GetPosition(this);
+        if (_threeDView)
+        {
+            var delta = screen - _pressScreen;
+            if (_orbiting) { _yaw += delta.X * 0.008; _pitch = Math.Clamp(_pitch + delta.Y * 0.008, -1.3, 1.3); }
+            else if (_mode == DragMode.Panning) { _panX += delta.X; _panY += delta.Y; }
+            _pressScreen = screen;
+            _layer.InvalidateVisual();
+            e.Handled = true;
+            return;
+        }
         var world = ToWorld(screen);
 
         switch (_mode)
@@ -711,6 +731,14 @@ public sealed class MindMapEditor : Canvas
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         base.OnPointerReleased(e);
+        if (_threeDView)
+        {
+            _orbiting = false;
+            _mode = DragMode.None;
+            e.Pointer.Capture(null);
+            e.Handled = true;
+            return;
+        }
         var world = ToWorld(e.GetPosition(this));
 
         switch (_mode)
@@ -798,7 +826,7 @@ public sealed class MindMapEditor : Canvas
         e.Handled = true;
 
         // Ctrl + wheel: zoom toward the cursor.
-        if (e.KeyModifiers.HasFlag(KeyModifiers.Control))
+        if (_threeDView || e.KeyModifiers.HasFlag(KeyModifiers.Control))
         {
             double factor = e.Delta.Y > 0 ? 1.12 : 1 / 1.12;
             ZoomAt(e.GetPosition(this), factor);
@@ -818,7 +846,7 @@ public sealed class MindMapEditor : Canvas
 
     private void ZoomAt(Point screenAnchor, double factor)
     {
-        double newZoom = Math.Clamp(_zoom * factor, 0.15, 4.0);
+        double newZoom = Math.Clamp(_zoom * factor, _threeDView ? 0.01 : 0.15, 4.0);
         if (Math.Abs(newZoom - _zoom) < 1e-9) return;
         var worldAnchor = ToWorld(screenAnchor);
         _zoom = newZoom;
@@ -835,6 +863,7 @@ public sealed class MindMapEditor : Canvas
     protected override void OnKeyDown(KeyEventArgs e)
     {
         base.OnKeyDown(e);
+        if (_threeDView) return;
         if (_editingNodeId != null) return; // TextBox owns the keys while editing.
 
         switch (e.Key)
@@ -1303,6 +1332,7 @@ public sealed class MindMapEditor : Canvas
 
     private void BeginEdit(MindMapNode node, bool isNew = false, string? replacementText = null)
     {
+        if (_threeDView) SetThreeDView(false);
         // New nodes were already snapshotted at creation; snapshot before editing an
         // existing node so its text change can be undone.
         if (!isNew) PushUndo();
@@ -1446,6 +1476,7 @@ public sealed class MindMapEditor : Canvas
 
     private void DrawAll(DrawingContext ctx)
     {
+        if (_threeDView) { DrawThreeDView(ctx); return; }
         DrawGrid(ctx);
 
         using (ctx.PushTransform(Matrix.CreateScale(_zoom, _zoom) * Matrix.CreateTranslation(_panX, _panY)))

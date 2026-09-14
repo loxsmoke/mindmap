@@ -102,6 +102,13 @@
                         <MenuItem Name="CopyOutlineMenuItem" Header="Copy outline" InputGesture="Ctrl+C" />
                         <MenuItem Name="PasteOutlineMenuItem" Header="Paste outline" InputGesture="Ctrl+V" />
                     </MenuItem>
+                    <MenuItem Header="Layout">
+                        <MenuItem Name="RebuildMenuItem" Header="Rebuild" />
+                        <MenuItem Name="FitMenuItem" Header="Fit to View" />
+                        <Separator />
+                        <MenuItem Name="FlatMenuItem" Header="Flat" ToggleType="CheckBox" IsChecked="True" />
+                        <MenuItem Name="ThreeDMenuItem" Header="3D View" ToggleType="CheckBox" />
+                    </MenuItem>
                 </Menu>
                 <Border Classes="sep" />
                 <TextBlock Text="Color" VerticalAlignment="Center"
@@ -110,10 +117,6 @@
                 <StackPanel Name="TextAlignmentButtons" Orientation="Horizontal" VerticalAlignment="Center"
                             Margin="8,0,0,0" />
                 <Border Classes="sep" />
-                <Button Classes="tool" Name="LayoutBtn" ToolTip.Tip="Rebuild the mind map layout">
-                    <TextBlock Text="Layout" Foreground="{DynamicResource ToolbarButtonForegroundBrush}" />
-                </Button>
-                <Border Classes="sep" />
                 <Button Classes="tool" Name="ZoomOutBtn" Width="34">
                     <TextBlock Text="−" Foreground="{DynamicResource ToolbarButtonForegroundBrush}" />
                 </Button>
@@ -121,9 +124,6 @@
                            Width="52" TextAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" />
                 <Button Classes="tool" Name="ZoomInBtn" Width="34">
                     <TextBlock Text="+" Foreground="{DynamicResource ToolbarButtonForegroundBrush}" />
-                </Button>
-                <Button Classes="tool" Name="FitBtn">
-                    <TextBlock Text="Fit" Foreground="{DynamicResource ToolbarButtonForegroundBrush}" />
                 </Button>
             </StackPanel>
         </Border>
