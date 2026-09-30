@@ -11,9 +11,9 @@ MindMap is available for Windows and macOS.
 
 MindMap is a lightweight desktop app for creating and editing mind maps. It provides a pannable, zoomable canvas with quick keyboard-driven node creation, connector-based relationships, simple text alignment and color controls, outline copy/paste, undo, image and HTML export, and `.mmap` file persistence.
 
-## Screenshot
+## Demo
 
-![MindMap screenshot](screenshot.png)
+![MindMap demo](screenplay.gif)
 
 [OSI model sample](https://raw.githack.com/loxsmoke/mindmap/main/samples/osi-model.html) - this is a sample mindmap and the link is to the exported HTML rendered in a new page.
 
