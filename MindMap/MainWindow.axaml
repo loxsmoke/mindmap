@@ -87,6 +87,7 @@
                         <MenuItem Name="OpenMenuItem" Header="Open&#x2026;" InputGesture="Ctrl+O" />
                         <MenuItem Name="RecentMenuItem" Header="Open recent" />
                         <MenuItem Name="SaveMenuItem" Header="Save" InputGesture="Ctrl+S" />
+                        <MenuItem Name="SaveAsMenuItem" Header="Save as&#x2026;" InputGesture="Ctrl+Shift+S" />
                         <MenuItem Name="ExportMenuItem" Header="Export&#x2026;" />
                         <Separator />
                         <MenuItem Name="AboutMenuItem" Header="About" />
@@ -103,11 +104,15 @@
                         <MenuItem Name="PasteOutlineMenuItem" Header="Paste outline" InputGesture="Ctrl+V" />
                     </MenuItem>
                     <MenuItem Header="Layout">
-                        <MenuItem Name="RebuildMenuItem" Header="Rebuild" />
+                        <MenuItem Name="RebuildMenuItem" Header="Rebuild from root" />
+                        <MenuItem Name="RebuildSelectedMenuItem" Header="Rebuild from selected" IsEnabled="False" />
                         <MenuItem Name="FitMenuItem" Header="Fit to View" />
                         <Separator />
-                        <MenuItem Name="FlatMenuItem" Header="Flat" ToggleType="CheckBox" IsChecked="True" />
-                        <MenuItem Name="ThreeDMenuItem" Header="3D View" ToggleType="CheckBox" />
+                        <MenuItem Name="FlatMenuItem" Header="Center root (default)" ToggleType="CheckBox" IsChecked="True" />
+                        <MenuItem Name="FlatTopLeftMenuItem" Header="Top left" ToggleType="CheckBox" />
+                        <MenuItem Name="FlatTopRightMenuItem" Header="Top right" ToggleType="CheckBox" />
+                        <MenuItem Name="FlatBottomLeftMenuItem" Header="Bottom left" ToggleType="CheckBox" />
+                        <MenuItem Name="FlatBottomRightMenuItem" Header="Bottom right" ToggleType="CheckBox" />
                     </MenuItem>
                 </Menu>
                 <Border Classes="sep" />

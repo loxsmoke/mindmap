@@ -20,6 +20,8 @@
 
   <ItemGroup>
     <Using Include="Xunit" />
+    <None Update="Fixtures\one-level-small.mmap" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Fixtures\two-level-small-broken.mmap" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

@@ -120,6 +120,7 @@ public partial class MainWindow : Window
         this.FindControl<MenuItem>("NewMenuItem")!.Click += async (_, _) => await OnNew();
         this.FindControl<MenuItem>("OpenMenuItem")!.Click += async (_, _) => await OnOpen();
         this.FindControl<MenuItem>("SaveMenuItem")!.Click += async (_, _) => await OnSave();
+        this.FindControl<MenuItem>("SaveAsMenuItem")!.Click += async (_, _) => await OnSaveAs();
         this.FindControl<MenuItem>("ExportMenuItem")!.Click += async (_, _) => await OnExport();
         this.FindControl<MenuItem>("AboutMenuItem")!.Click += async (_, _) => await ShowAboutDialog();
         this.FindControl<MenuItem>("ExitMenuItem")!.Click += (_, _) => Close();
@@ -134,13 +135,25 @@ public partial class MainWindow : Window
         this.FindControl<MenuItem>("CopyOutlineMenuItem")!.Click += async (_, _) => await CopyOutline();
         this.FindControl<MenuItem>("PasteOutlineMenuItem")!.Click += async (_, _) => await PasteOutline();
         this.FindControl<MenuItem>("RebuildMenuItem")!.Click += (_, _) => { _editor.RebuildLayout(); _editor.Focus(); };
+        var rebuildSelectedMenuItem = this.FindControl<MenuItem>("RebuildSelectedMenuItem")!;
+        rebuildSelectedMenuItem.Click += (_, _) => { _editor.RebuildSelectedLayout(); _editor.Focus(); };
+        rebuildSelectedMenuItem.IsEnabled = _editor.HasSelectedNodes;
+        _editor.SelectionChanged += (_, _) => rebuildSelectedMenuItem.IsEnabled = _editor.HasSelectedNodes;
         this.FindControl<MenuItem>("FitMenuItem")!.Click += (_, _) => { _editor.ZoomToFit(); _editor.Focus(); };
-        this.FindControl<MenuItem>("FlatMenuItem")!.Click += (_, _) => _editor.SetThreeDView(false);
-        this.FindControl<MenuItem>("ThreeDMenuItem")!.Click += (_, _) => _editor.SetThreeDView(true);
+        var flatLayouts = new[]
+        {
+            ("FlatMenuItem", FlatLayout.Centered),
+            ("FlatTopLeftMenuItem", FlatLayout.TopLeft),
+            ("FlatTopRightMenuItem", FlatLayout.TopRight),
+            ("FlatBottomLeftMenuItem", FlatLayout.BottomLeft),
+            ("FlatBottomRightMenuItem", FlatLayout.BottomRight)
+        };
+        foreach (var (name, layout) in flatLayouts)
+            this.FindControl<MenuItem>(name)!.Click += (_, _) => _editor.SetFlatLayout(layout);
         _editor.ViewChanged += (_, _) =>
         {
-            this.FindControl<MenuItem>("FlatMenuItem")!.IsChecked = !_editor.IsThreeDView;
-            this.FindControl<MenuItem>("ThreeDMenuItem")!.IsChecked = _editor.IsThreeDView;
+            foreach (var (name, layout) in flatLayouts)
+                this.FindControl<MenuItem>(name)!.IsChecked = _editor.CurrentFlatLayout == layout;
         };
         _editor.CopyRequested += async (_, _) => await CopyOutline();
         _editor.PasteRequested += async (_, _) => await PasteOutline();
@@ -476,25 +489,36 @@ public partial class MainWindow : Window
     private async Task<bool> OnSave()
     {
         if (_currentPath != null) return await SaveToPath(_currentPath);
+        return await OnSaveAs();
+    }
 
+    private async Task<bool> OnSaveAs()
+    {
         var suggestedDirectory = GetSuggestedSaveDirectory();
         var suggestedFolder = await StorageProvider.TryGetFolderFromPathAsync(suggestedDirectory);
         var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
-            Title = "Save mind map",
+            Title = "Save mind map as",
             SuggestedStartLocation = suggestedFolder,
-            SuggestedFileName = GetNextAvailableFileName(suggestedDirectory, GetSuggestedDocumentStem(), ".mmap"),
+            SuggestedFileName = _currentPath != null ? Path.GetFileName(_currentPath)
+                : GetNextAvailableFileName(suggestedDirectory, GetSuggestedDocumentStem(), ".mmap"),
             DefaultExtension = "mmap",
+            ShowOverwritePrompt = true,
             FileTypeChoices = new[] { MapFileType },
         });
         if (file == null) return false;
+        var localPath = file.TryGetLocalPath();
+        if (localPath != null) return await SaveToPath(localPath);
 
         try
         {
             var json = MindMapStore.Serialize(_editor.GetDocument());
-            await using var stream = await file.OpenWriteAsync();
-            await using var writer = new StreamWriter(stream);
-            await writer.WriteAsync(json);
+            await using (var stream = await file.OpenWriteAsync())
+            {
+                if (stream.CanSeek) stream.SetLength(0);
+                await using var writer = new StreamWriter(stream);
+                await writer.WriteAsync(json);
+            }
             _currentPath = file.TryGetLocalPath();
             _isDirty = false;
             SetWindowTitle(file.Name);

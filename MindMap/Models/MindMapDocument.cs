@@ -13,6 +13,14 @@ public sealed class MindMapDocument
     public List<MindMapNode> Nodes { get; set; } = new();
     public List<MindMapConnection> Connections { get; set; } = new();
 
+    private string? _cornerLayout;
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? CornerLayout
+    {
+        get => _cornerLayout;
+        set => _cornerLayout = value is "TopLeft" or "TopRight" or "BottomLeft" or "BottomRight" ? value : null;
+    }
+
     [JsonIgnore]
     public bool IsEmpty => Nodes.Count == 0;
 
@@ -38,7 +46,7 @@ public sealed class MindMapDocument
     /// <summary>A deep copy — used for undo snapshots.</summary>
     public MindMapDocument Clone()
     {
-        var copy = new MindMapDocument { Version = Version };
+        var copy = new MindMapDocument { Version = Version, CornerLayout = CornerLayout };
         foreach (var n in Nodes)
             copy.Nodes.Add(new MindMapNode
             {
