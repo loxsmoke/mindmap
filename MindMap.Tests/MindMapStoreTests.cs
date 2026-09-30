@@ -6,6 +6,35 @@ namespace MindMap.Tests;
 
 public sealed class MindMapStoreTests
 {
+    [Theory]
+    [InlineData("TopLeft")]
+    [InlineData("TopRight")]
+    [InlineData("BottomLeft")]
+    [InlineData("BottomRight")]
+    public void CornerLayoutSurvivesSerializationAndCloning(string layout)
+    {
+        var source = MindMapDocument.CreateStarter();
+        source.CornerLayout = layout;
+        var json = MindMapStore.Serialize(source);
+        using var parsed = JsonDocument.Parse(json);
+        Assert.Equal(layout, parsed.RootElement.GetProperty("CornerLayout").GetString());
+        Assert.Equal(layout, MindMapStore.Deserialize(json).CornerLayout);
+        Assert.Equal(layout, source.Clone().CornerLayout);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("Centered")]
+    [InlineData("Unknown")]
+    public void OnlyCornerLayoutsArePersisted(string? layout)
+    {
+        var source = MindMapDocument.CreateStarter();
+        source.CornerLayout = layout;
+        using var parsed = JsonDocument.Parse(MindMapStore.Serialize(source));
+        Assert.False(parsed.RootElement.TryGetProperty("CornerLayout", out _));
+        Assert.Null(MindMapStore.Deserialize("{\"Nodes\":[],\"Connections\":[]}").CornerLayout);
+    }
+
     [Fact]
     public void SerializeIncludesDocumentVersion()
     {

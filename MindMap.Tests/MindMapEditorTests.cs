@@ -107,6 +107,79 @@ public sealed class MindMapEditorTests
     }
 
     [Fact]
+    public void MovingNodeOnSameSidePreservesAllOtherPositions()
+    {
+        var editor = new MindMapEditor();
+        editor.LoadDocument(OutlineDocument());
+        var doc = editor.GetDocument();
+        var node = doc.Nodes.Single(n => n.Text == "Alpha");
+        var others = doc.Nodes.Where(n => n.Id != node.Id).Select(n => (n.Id, n.X, n.Y)).ToArray();
+        double x = node.X + 25;
+        double y = node.Y - 300;
+
+        editor.TestMoveNodeAndResolveDrag(node.Id, x, y);
+
+        Assert.Equal(x, node.X);
+        Assert.Equal(y, node.Y);
+        Assert.Equal(others, doc.Nodes.Where(n => n.Id != node.Id).Select(n => (n.Id, n.X, n.Y)).ToArray());
+    }
+
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    [InlineData(true, true)]
+    public void PassingChildrenRebuildsDescendantsWithMovedParentAnchored(bool left, bool moveRoot)
+    {
+        var editor = new MindMapEditor();
+        var root = editor.GetDocument().Nodes.Single();
+        var branch = editor.TestCreateChild(root.Id, leftOfRoot: left)!;
+        var child = editor.TestCreateChild(branch.Id)!;
+        var grandchild = editor.TestCreateChild(child.Id)!;
+        var node = moveRoot ? root : branch;
+        var unrelated = editor.TestCreateChild(root.Id, leftOfRoot: !left)!;
+        var unrelatedPosition = (unrelated.X, unrelated.Y);
+        // Drop beyond all descendants, with no overlap and no root-side change.
+        double x = left ? grandchild.X - 500 : grandchild.X + grandchild.Width + 500;
+        double y = node.Y;
+
+        Assert.True(editor.TestMoveNodeAndResolveDrag(node.Id, x, y));
+
+        Assert.Equal((x, y), (node.X, node.Y));
+        bool childrenOnLeft = moveRoot ? !left : left;
+        Assert.True(childrenOnLeft ? child.X + child.Width < branch.X : child.X > branch.X + branch.Width);
+        Assert.True(childrenOnLeft ? grandchild.X + grandchild.Width < child.X : grandchild.X > child.X + child.Width);
+        if (!moveRoot) Assert.Equal(unrelatedPosition, (unrelated.X, unrelated.Y));
+        else Assert.All(editor.GetDocument().Nodes.Where(n => n.Id != root.Id),
+            n => Assert.True(childrenOnLeft ? n.X + n.Width < root.X : n.X > root.X + root.Width));
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void MovingParentOnlyRepairsItsChildrenWhenNecessary(bool crossRoot)
+    {
+        var editor = new MindMapEditor();
+        editor.LoadDocument(OutlineDocument());
+        var doc = editor.GetDocument();
+        var root = doc.Nodes.Single(n => n.Text == "Root");
+        var node = doc.Nodes.Single(n => n.Text == "Alpha");
+        var child = doc.Nodes.Single(n => n.Text == "Alpha child");
+        var others = doc.Nodes.Where(n => n.Id != node.Id && n.Id != child.Id)
+            .Select(n => (n.Id, n.X, n.Y)).ToArray();
+        double x = crossRoot ? root.X - 400 : child.X;
+        double y = child.Y;
+
+        editor.TestMoveNodeAndResolveDrag(node.Id, x, y);
+
+        Assert.Equal(x, node.X);
+        Assert.Equal(y, node.Y);
+        Assert.True(crossRoot ? child.X + child.Width < node.X : child.X > node.X + node.Width);
+        Assert.Equal(others, doc.Nodes.Where(n => n.Id != node.Id && n.Id != child.Id)
+            .Select(n => (n.Id, n.X, n.Y)).ToArray());
+    }
+
+    [Fact]
     public void DraggingRootBranchAcrossRootMovesBranchToOtherSide()
     {
         var editor = new MindMapEditor();

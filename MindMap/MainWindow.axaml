@@ -87,6 +87,7 @@
                         <MenuItem Name="OpenMenuItem" Header="Open&#x2026;" InputGesture="Ctrl+O" />
                         <MenuItem Name="RecentMenuItem" Header="Open recent" />
                         <MenuItem Name="SaveMenuItem" Header="Save" InputGesture="Ctrl+S" />
+                        <MenuItem Name="SaveAsMenuItem" Header="Save as&#x2026;" InputGesture="Ctrl+Shift+S" />
                         <MenuItem Name="ExportMenuItem" Header="Export&#x2026;" />
                         <Separator />
                         <MenuItem Name="AboutMenuItem" Header="About" />
@@ -102,6 +103,17 @@
                         <MenuItem Name="CopyOutlineMenuItem" Header="Copy outline" InputGesture="Ctrl+C" />
                         <MenuItem Name="PasteOutlineMenuItem" Header="Paste outline" InputGesture="Ctrl+V" />
                     </MenuItem>
+                    <MenuItem Header="Layout">
+                        <MenuItem Name="RebuildMenuItem" Header="Rebuild from root" />
+                        <MenuItem Name="RebuildSelectedMenuItem" Header="Rebuild from selected" IsEnabled="False" />
+                        <MenuItem Name="FitMenuItem" Header="Fit to View" />
+                        <Separator />
+                        <MenuItem Name="FlatMenuItem" Header="Center root (default)" ToggleType="CheckBox" IsChecked="True" />
+                        <MenuItem Name="FlatTopLeftMenuItem" Header="Top left" ToggleType="CheckBox" />
+                        <MenuItem Name="FlatTopRightMenuItem" Header="Top right" ToggleType="CheckBox" />
+                        <MenuItem Name="FlatBottomLeftMenuItem" Header="Bottom left" ToggleType="CheckBox" />
+                        <MenuItem Name="FlatBottomRightMenuItem" Header="Bottom right" ToggleType="CheckBox" />
+                    </MenuItem>
                 </Menu>
                 <Border Classes="sep" />
                 <TextBlock Text="Color" VerticalAlignment="Center"
@@ -110,10 +122,6 @@
                 <StackPanel Name="TextAlignmentButtons" Orientation="Horizontal" VerticalAlignment="Center"
                             Margin="8,0,0,0" />
                 <Border Classes="sep" />
-                <Button Classes="tool" Name="LayoutBtn" ToolTip.Tip="Rebuild the mind map layout">
-                    <TextBlock Text="Layout" Foreground="{DynamicResource ToolbarButtonForegroundBrush}" />
-                </Button>
-                <Border Classes="sep" />
                 <Button Classes="tool" Name="ZoomOutBtn" Width="34">
                     <TextBlock Text="−" Foreground="{DynamicResource ToolbarButtonForegroundBrush}" />
                 </Button>
@@ -121,9 +129,6 @@
                            Width="52" TextAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" />
                 <Button Classes="tool" Name="ZoomInBtn" Width="34">
                     <TextBlock Text="+" Foreground="{DynamicResource ToolbarButtonForegroundBrush}" />
-                </Button>
-                <Button Classes="tool" Name="FitBtn">
-                    <TextBlock Text="Fit" Foreground="{DynamicResource ToolbarButtonForegroundBrush}" />
                 </Button>
             </StackPanel>
         </Border>

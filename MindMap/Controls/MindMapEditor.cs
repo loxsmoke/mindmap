@@ -33,7 +33,7 @@ namespace MindMap.Controls;
 ///   • Ctrl+click                -> toggle selection; drag on empty space -> marquee select
 ///   • Right/Middle/Space+drag   -> pan;  wheel -> pan (Shift: horizontal, Ctrl: zoom)
 /// </summary>
-public sealed class MindMapEditor : Canvas
+public sealed partial class MindMapEditor : Canvas
 {
     private enum DragMode { None, Panning, MovingNodes, Marquee, Connecting }
 
@@ -105,6 +105,7 @@ public sealed class MindMapEditor : Canvas
 
     public double ZoomPercent => _zoom * 100.0;
     public TextAlignment CurrentTextAlignment => _currentTextAlignment;
+    public bool HasSelectedNodes => SelectedNodes().Any();
 
     internal Point TestPan => new(_panX, _panY);
 
@@ -162,7 +163,8 @@ public sealed class MindMapEditor : Canvas
         foreach (var n in NodesToMoveForDrag(nodeId)) _moveOrigin[n.Id] = new Point(n.X, n.Y);
         node.X = x;
         node.Y = y;
-        var changed = TryReparentMovedNode(new Point(node.CenterX, node.CenterY)) || TryReflowMovedBranch();
+        var reparented = TryReparentMovedNode(new Point(node.CenterX, node.CenterY));
+        var changed = TryReflowMovedBranch() || reparented;
         _moveOrigin.Clear();
         _dragPrimaryNodeId = null;
         _dropParentCandidateId = null;
@@ -231,6 +233,7 @@ public sealed class MindMapEditor : Canvas
         CancelEdit();
         _doc = _undo[^1];
         _undo.RemoveAt(_undo.Count - 1);
+        ViewChanged?.Invoke(this, EventArgs.Empty);
         _selected.Clear();
         _hoverNodeId = null;
         UpdateCurrentTextAlignmentFromSelection();
@@ -269,6 +272,8 @@ public sealed class MindMapEditor : Canvas
         CancelEdit();
         PushUndo();
         _doc = doc;
+        ViewChanged?.Invoke(this, EventArgs.Empty);
+        _mode = DragMode.None;
         _selected.Clear();
         _hoverNodeId = null;
         UpdateCurrentTextAlignmentFromSelection();
@@ -471,6 +476,31 @@ public sealed class MindMapEditor : Canvas
         RaiseChanged();
     }
 
+    public void RebuildSelectedLayout()
+    {
+        if (!HasSelectedNodes) return;
+        CommitEdit();
+        var selected = SelectedNodes().ToList();
+        // Rebuild each selected subtree once when both ancestors and descendants
+        // are selected.
+        var descendants = selected.SelectMany(n => DescendantIds(n.Id)).ToHashSet();
+        var anchors = selected.Where(n => !descendants.Contains(n.Id) && ChildrenOf(n).Any()).ToList();
+        if (anchors.Count == 0) return;
+        PushUndo();
+        foreach (var node in anchors)
+        {
+            var children = ChildrenOf(node).ToList();
+            if (CurrentFlatLayout != FlatLayout.Centered)
+                LayoutCorner(node, children);
+            else if (IsRoot(node))
+                ReflowTree(node);
+            else
+                LayoutRootSide(node, children, (int)SideOf(node));
+        }
+        UpdateEditorPosition();
+        RaiseChanged();
+    }
+
     public void ResetZoom()
     {
         _zoom = 1.0;
@@ -496,7 +526,7 @@ public sealed class MindMapEditor : Canvas
         double w = maxX - minX + margin * 2;
         double h = maxY - minY + margin * 2;
         // Never magnify past 100% when fitting (a lone node shouldn't fill the screen).
-        _zoom = Math.Clamp(Math.Min(Bounds.Width / w, Bounds.Height / h), 0.2, 1.0);
+        _zoom = Math.Min(Math.Min(Bounds.Width / w, Bounds.Height / h), 1.0);
         _panX = (Bounds.Width - (maxX + minX) * _zoom) / 2;
         _panY = (Bounds.Height - (maxY + minY) * _zoom) / 2;
         _layer.InvalidateVisual();
@@ -723,7 +753,7 @@ public sealed class MindMapEditor : Canvas
                     return n != null && (n.X != kv.Value.X || n.Y != kv.Value.Y);
                 });
                 bool reparented = TryReparentMovedNode(world);
-                bool reflowed = !reparented && TryReflowMovedBranch();
+                bool reflowed = TryReflowMovedBranch();
                 if ((moved || reparented || reflowed) && _pendingMoveSnapshot != null)
                 {
                     _undo.Add(_pendingMoveSnapshot);
@@ -797,15 +827,15 @@ public sealed class MindMapEditor : Canvas
         base.OnPointerWheelChanged(e);
         e.Handled = true;
 
-        // Ctrl + wheel: zoom toward the cursor.
+        // Ctrl + wheel zooms toward the cursor.
         if (e.KeyModifiers.HasFlag(KeyModifiers.Control))
         {
-            double factor = e.Delta.Y > 0 ? 1.12 : 1 / 1.12;
-            ZoomAt(e.GetPosition(this), factor);
+            if (e.Delta.Y != 0)
+                ZoomAt(e.GetPosition(this), Math.Pow(1.12, e.Delta.Y));
             return;
         }
 
-        // Otherwise pan: Shift -> horizontal, plain -> vertical.
+        // Wheel pans vertically; Shift + wheel pans horizontally.
         double delta = e.Delta.Y != 0 ? e.Delta.Y : e.Delta.X;
         if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
             _panX += delta * 60;
@@ -818,7 +848,7 @@ public sealed class MindMapEditor : Canvas
 
     private void ZoomAt(Point screenAnchor, double factor)
     {
-        double newZoom = Math.Clamp(_zoom * factor, 0.15, 4.0);
+        double newZoom = Math.Clamp(_zoom * factor, Math.Min(_zoom, 0.01), 4.0);
         if (Math.Abs(newZoom - _zoom) < 1e-9) return;
         var worldAnchor = ToWorld(screenAnchor);
         _zoom = newZoom;
@@ -954,7 +984,7 @@ public sealed class MindMapEditor : Canvas
         var candidate = _dropParentCandidateId != null
             ? NodeById(_dropParentCandidateId)
             : FindReparentCandidate(pointerWorld);
-        return candidate != null && ReparentNode(nodeId, candidate.Id);
+        return candidate != null && ReparentNode(nodeId, candidate.Id, preservePositions: true);
     }
 
     private MindMapNode? FindReparentCandidate(Point pointerWorld)
@@ -992,21 +1022,62 @@ public sealed class MindMapEditor : Canvas
         if (_dragPrimaryNodeId == null || !_selected.SetEquals(new[] { _dragPrimaryNodeId })) return false;
 
         var node = NodeById(_dragPrimaryNodeId);
-        if (node == null) return false;
+        if (node == null || !_moveOrigin.TryGetValue(node.Id, out var origin)) return false;
+        if (node.X == origin.X && node.Y == origin.Y) return false;
 
         var root = RootOf(node.Id);
-        if (root == null || root.Id == node.Id) return false;
+        if (root == null) return false;
+        var children = ChildrenOf(node).ToList();
+        if (children.Count == 0) return false;
 
-        ReflowTree(root);
+        bool changedSides = root.Id != node.Id &&
+            (origin.X + node.Width / 2 < root.CenterX) != (node.CenterX < root.CenterX);
+        double originalCenterX = origin.X + node.Width / 2;
+        double originalCenterY = origin.Y + node.Height / 2;
+        bool passedChildren = children.Any(child =>
+            (child.CenterX < originalCenterX) != (child.CenterX < node.CenterX) ||
+            (CurrentFlatLayout != FlatLayout.Centered &&
+             (child.CenterY < originalCenterY) != (child.CenterY < node.CenterY)));
+        var bounds = new Rect(node.X, node.Y, node.Width, node.Height);
+        var descendants = DescendantIds(node.Id);
+        var descendantNodes = _doc.Nodes.Where(n => descendants.Contains(n.Id)).ToList();
+        int rootDirection = 0;
+        if (root.Id == node.Id && node.X != origin.X && descendantNodes.Count > 0)
+        {
+            if (node.X > origin.X && descendantNodes.All(n => n.X + n.Width <= node.X)) rootDirection = -1;
+            else if (node.X < origin.X && descendantNodes.All(n => n.X >= node.X + node.Width)) rootDirection = 1;
+        }
+        bool overlapsChildren = descendantNodes.Any(n =>
+            OverlapArea(bounds, new Rect(n.X, n.Y, n.Width, n.Height)) > 0);
+        if (!changedSides && !overlapsChildren && !passedChildren && rootDirection == 0) return false;
+
+        // Anchor the dropped node; only its descendants may need new positions.
+        if (rootDirection != 0)
+        {
+            if (CurrentFlatLayout == FlatLayout.Centered)
+                LayoutRootSide(node, children, rootDirection);
+            else
+                LayoutCorner(node, children, rootDirection);
+        }
+        else if (CurrentFlatLayout != FlatLayout.Centered)
+            LayoutCorner(node, children);
+        else if (root.Id == node.Id)
+        {
+            // Keep root branches on their original sides when the root passes them.
+            var left = children.Where(c => c.CenterX < originalCenterX).ToList();
+            var right = children.Where(c => c.CenterX >= originalCenterX).ToList();
+            LayoutRootSide(node, left, -1);
+            LayoutRootSide(node, right, 1);
+        }
+        else
+            LayoutRootSide(node, children, node.CenterX < root.CenterX ? -1 : 1);
+        UpdateEditorPosition();
         return true;
     }
 
     private IEnumerable<MindMapNode> NodesToMoveForDrag(string primaryNodeId)
     {
         var ids = _selected.ToHashSet();
-        if (ids.SetEquals(new[] { primaryNodeId }))
-            ids.UnionWith(DescendantIds(primaryNodeId));
-
         foreach (var node in _doc.Nodes.Where(n => ids.Contains(n.Id)))
             yield return node;
     }
@@ -1020,7 +1091,7 @@ public sealed class MindMapEditor : Canvas
         return currentParent != newParentId;
     }
 
-    private bool ReparentNode(string nodeId, string newParentId)
+    private bool ReparentNode(string nodeId, string newParentId, bool preservePositions = false)
     {
         if (!CanReparentNode(nodeId, newParentId)) return false;
 
@@ -1036,6 +1107,7 @@ public sealed class MindMapEditor : Canvas
         if (insertIndex >= 0) _doc.Connections.Insert(insertIndex + 1, newConnection);
         else _doc.Connections.Add(newConnection);
 
+        if (preservePositions) return true;
         var newRoot = RootOf(newParentId);
         if (oldRoot != null && newRoot?.Id != oldRoot.Id) ReflowTree(oldRoot);
         ReflowTree(newRoot ?? oldRoot);
@@ -1135,12 +1207,16 @@ public sealed class MindMapEditor : Canvas
         else
         {
             // Grow the branch away from the root: children of a left-side node go further left.
-            child.X = leftOfRoot && IsRoot(parent)
+            child.X = CurrentFlatLayout is FlatLayout.TopRight or FlatLayout.BottomRight
+                ? parent.X - ChildHorizontalGap - child.Width
+                : CurrentFlatLayout is FlatLayout.TopLeft or FlatLayout.BottomLeft
+                ? parent.X + parent.Width + ChildHorizontalGap
+                : leftOfRoot && IsRoot(parent)
                 ? parent.X - ChildHorizontalGap - child.Width
                 : SideOf(parent) < 0
                 ? parent.X - ChildHorizontalGap - child.Width
                 : parent.X + parent.Width + ChildHorizontalGap;
-            child.Y = parent.Y;
+            child.Y = parent.CenterY - child.Height / 2;
         }
 
         _doc.Nodes.Add(child);
@@ -1156,8 +1232,35 @@ public sealed class MindMapEditor : Canvas
             _doc.Connections.Add(connection);
         }
 
-        ReflowTree(RootOf(parent.Id));
+        ReflowAfterChildAdded(parent, child);
         return child;
+    }
+
+    private void ReflowAfterChildAdded(MindMapNode parent, MindMapNode child)
+    {
+        if (CurrentFlatLayout != FlatLayout.Centered)
+        {
+            ReflowTree(RootOf(parent.Id));
+            return;
+        }
+        bool Overlaps(MindMapNode a, MindMapNode b) => OverlapArea(
+            new Rect(a.X, a.Y, a.Width, a.Height), new Rect(b.X, b.Y, b.Width, b.Height)) > 0;
+
+        // A free insertion must not disturb any manually positioned nodes.
+        if (!_doc.Nodes.Any(n => n.Id != child.Id && Overlaps(child, n))) return;
+
+        // Resolve sibling collisions locally first, with the parent anchored.
+        if (IsRoot(parent))
+            ReflowTree(parent);
+        else
+            LayoutRootSide(parent, ChildrenOf(parent).ToList(), (int)SideOf(parent));
+
+        var descendants = DescendantIds(parent.Id);
+        var inside = _doc.Nodes.Where(n => descendants.Contains(n.Id)).ToList();
+        var outside = _doc.Nodes.Where(n => !descendants.Contains(n.Id)).ToList();
+        if (inside.Any(n => outside.Any(other => Overlaps(n, other))))
+            ReflowTree(RootOf(parent.Id));
+        UpdateEditorPosition();
     }
 
     private void ReflowTree(MindMapNode? root)
@@ -1166,6 +1269,13 @@ public sealed class MindMapEditor : Canvas
 
         var directChildren = ChildrenOf(root).ToList();
         if (directChildren.Count == 0) return;
+
+        if (CurrentFlatLayout != FlatLayout.Centered)
+        {
+            LayoutCorner(root, directChildren);
+            UpdateEditorPosition();
+            return;
+        }
 
         var left = directChildren.Where(n => n.CenterX < root.CenterX).ToList();
         var right = directChildren.Where(n => n.CenterX >= root.CenterX).ToList();
