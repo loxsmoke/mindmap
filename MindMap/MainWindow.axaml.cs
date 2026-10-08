@@ -207,10 +207,21 @@ public partial class MainWindow : Window
                 Content = new ColorSwatch(hex),
             };
             btn.Classes.Add("swatch");
+            ToolTip.SetTip(btn, "Click to change the selected node color. Ctrl+click to change the node and all its children.");
+            var modifiers = KeyModifiers.None;
+            btn.AddHandler(InputElement.PointerPressedEvent, (_, e) => modifiers = e.KeyModifiers,
+                Avalonia.Interactivity.RoutingStrategies.Tunnel);
+            btn.AddHandler(InputElement.PointerReleasedEvent, (_, e) => modifiers = e.KeyModifiers,
+                Avalonia.Interactivity.RoutingStrategies.Tunnel);
+            btn.AddHandler(InputElement.KeyDownEvent, (_, e) => modifiers = e.KeyModifiers,
+                Avalonia.Interactivity.RoutingStrategies.Tunnel);
+            btn.AddHandler(InputElement.KeyUpEvent, (_, e) => modifiers = e.KeyModifiers,
+                Avalonia.Interactivity.RoutingStrategies.Tunnel);
             var captured = hex;
             btn.Click += (_, _) =>
             {
-                _editor.SetSelectionColor(captured);
+                _editor.SetSelectionColor(captured, modifiers.HasFlag(KeyModifiers.Control));
+                modifiers = KeyModifiers.None;
                 _editor.Focus();
             };
             host.Children.Add(btn);

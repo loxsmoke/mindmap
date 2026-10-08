@@ -415,11 +415,15 @@ public sealed partial class MindMapEditor : Canvas
         RaiseChanged();
     }
 
-    public void SetSelectionColor(string hex)
+    public void SetSelectionColor(string hex, bool includeChildren = false)
     {
         if (!SelectedNodes().Any()) return;
         PushUndo();
-        foreach (var n in SelectedNodes()) n.Color = hex;
+        var ids = SelectedNodes().Select(n => n.Id).ToHashSet();
+        if (includeChildren)
+            foreach (var id in ids.ToArray())
+                ids.UnionWith(DescendantIds(id));
+        foreach (var n in _doc.Nodes.Where(n => ids.Contains(n.Id))) n.Color = hex;
         RaiseChanged();
     }
 

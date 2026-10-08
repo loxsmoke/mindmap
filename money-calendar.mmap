@@ -1,0 +1,99 @@
+{
+  "Version": 1,
+  "Nodes": [
+    {
+      "Id": "140f64cc1a574b58b760441aab995a0c",
+      "X": 400,
+      "Y": 300,
+      "Width": 170,
+      "Height": 54,
+      "Text": "Money calendar",
+      "Color": "#4C6EF5",
+      "TextAlignment": "Center",
+      "CenterX": 485,
+      "CenterY": 327
+    },
+    {
+      "Id": "2492e51d90c24ab69f02b7487c03ce51",
+      "X": 660,
+      "Y": 304,
+      "Width": 150,
+      "Height": 46,
+      "Text": "Data",
+      "Color": "#4C6EF5",
+      "TextAlignment": "Center",
+      "CenterX": 735,
+      "CenterY": 327
+    },
+    {
+      "Id": "b4a76bd958be4c5a86ca8ce476d7809c",
+      "X": 900,
+      "Y": 199,
+      "Width": 150,
+      "Height": 46,
+      "Text": "Accounts",
+      "Color": "#4C6EF5",
+      "TextAlignment": "Center",
+      "CenterX": 975,
+      "CenterY": 222
+    },
+    {
+      "Id": "c7c5feca95664f03b25e22a667fcb01a",
+      "X": 900,
+      "Y": 269,
+      "Width": 150,
+      "Height": 46,
+      "Text": "Expenses",
+      "Color": "#4C6EF5",
+      "TextAlignment": "Center",
+      "CenterX": 975,
+      "CenterY": 292
+    },
+    {
+      "Id": "ee14f1f340504d60bd03ecccf8fa05f2",
+      "X": 896,
+      "Y": 336,
+      "Width": 150,
+      "Height": 46,
+      "Text": "Income",
+      "Color": "#4C6EF5",
+      "TextAlignment": "Center",
+      "CenterX": 971,
+      "CenterY": 359
+    },
+    {
+      "Id": "cdcba181bfc04c719a9a043d50ff58f1",
+      "X": 900,
+      "Y": 409,
+      "Width": 150,
+      "Height": 46,
+      "Text": "Transactions",
+      "Color": "#4C6EF5",
+      "TextAlignment": "Center",
+      "CenterX": 975,
+      "CenterY": 432
+    }
+  ],
+  "Connections": [
+    {
+      "FromId": "140f64cc1a574b58b760441aab995a0c",
+      "ToId": "2492e51d90c24ab69f02b7487c03ce51"
+    },
+    {
+      "FromId": "2492e51d90c24ab69f02b7487c03ce51",
+      "ToId": "b4a76bd958be4c5a86ca8ce476d7809c"
+    },
+    {
+      "FromId": "2492e51d90c24ab69f02b7487c03ce51",
+      "ToId": "c7c5feca95664f03b25e22a667fcb01a"
+    },
+    {
+      "FromId": "2492e51d90c24ab69f02b7487c03ce51",
+      "ToId": "ee14f1f340504d60bd03ecccf8fa05f2"
+    },
+    {
+      "FromId": "2492e51d90c24ab69f02b7487c03ce51",
+      "ToId": "cdcba181bfc04c719a9a043d50ff58f1"
+    }
+  ]
+}

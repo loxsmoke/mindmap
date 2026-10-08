@@ -7,6 +7,37 @@ namespace MindMap.Tests;
 
 public sealed class MindMapEditorTests
 {
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void SelectionColorOptionIncludesDescendantsAndUndoesTogether(bool includeChildren)
+    {
+        var editor = new MindMapEditor();
+        editor.LoadDocument(OutlineDocument());
+        var doc = editor.GetDocument();
+        var alpha = doc.Nodes.Single(n => n.Text == "Alpha");
+        var child = doc.Nodes.Single(n => n.Text == "Alpha child");
+        var grandchild = editor.TestCreateChild(child.Id)!;
+        var original = doc.Nodes.ToDictionary(n => n.Id, n => n.Color);
+        editor.TestSelectOnly(alpha.Id);
+        var changes = 0;
+        editor.DocumentChanged += (_, _) => changes++;
+
+        editor.SetSelectionColor("#E64980", includeChildren);
+
+        foreach (var node in doc.Nodes)
+        {
+            var shouldChange = node.Id == alpha.Id ||
+                (includeChildren && (node.Id == child.Id || node.Id == grandchild.Id));
+            Assert.Equal(shouldChange ? "#E64980" : original[node.Id], node.Color);
+        }
+        Assert.Equal(1, changes);
+
+        editor.Undo();
+
+        Assert.All(editor.GetDocument().Nodes, node => Assert.Equal(original[node.Id], node.Color));
+    }
+
     [Fact]
     public void AddingChildrenOneAtATimeKeepsLayoutOrderedAndNonOverlapping()
     {
